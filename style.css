@@ -35,3 +35,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .update-banner .gap{flex-wrap:nowrap}
 .update-status{margin-top:10px;font-size:12px;color:#42658b}
 @media(max-width:400px){.calDay{min-height:53px}.calAmt{font-size:9px}#tabs{padding-left:4px;padding-right:4px}#tabs .nav-icon{width:37px;height:34px}.update-banner{align-items:flex-start;flex-direction:column}}
+
+
+/* v3.1: visual rhythm, heading actions aligned and round brand mark */
+.home-summary-grid {margin-bottom:24px;}
+#screen .home-summary-grid + .card {margin-top:0;}
+.section-title-row {align-items:center; margin-bottom:14px; min-height:40px; gap:12px;}
+.section-title-row h2 {margin:0; font-size:18px; line-height:1.4; flex:1; min-width:0;}
+.section-title-row .outline {flex-shrink:0; margin:0; min-height:38px; display:inline-flex; align-items:center; justify-content:center; border-radius:14px; white-space:nowrap; padding:9px 13px;}
+.brand-icon {width:34px; height:34px; border-radius:12px; background:linear-gradient(145deg,#3aa5ff,#2763e8); color:#fff; box-shadow:0 4px 10px #2f72dc28;}
+.brand-icon svg {width:21px; height:21px;}
+#tabs {border-radius:24px 24px 0 0;}
+#tabs button, #tabs .nav-icon {border-radius:15px;}
+@media (max-width:400px){.home-summary-grid{margin-bottom:20px}.section-title-row{gap:8px}.section-title-row h2{font-size:16px}.section-title-row .outline{font-size:13px;padding:9px 10px}}
