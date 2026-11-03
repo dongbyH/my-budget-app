@@ -91,29 +91,64 @@ $('applyUpdate').onclick=()=>location.reload();
 $('dismissUpdate').onclick=()=>{updateDismissed=true;$('updateBanner').hidden=true;};
 
 
-// Horizontal tab gestures. Never hijack vertical scrolling, form controls,
-// dialogs, calendar/date interactions or horizontal scrolling widgets.
+// v4.2: responsive, consecutive horizontal swipes with live drag feedback.
+// Vertical scrolling and typing controls retain their normal behavior;
+// horizontal gestures also work over calendar dates without triggering a tap.
 (function enableTabSwipe(){
  const surface=$('screen');
  let gesture=null;
- const blocked='button,input,select,textarea,a,label,[contenteditable],.calendar,.calendar-handle,[data-day],.bar,dialog,[role="slider"]';
+ let suppressClickUntil=0;
+ // Inputs and calendar cells have their own gestures; ordinary buttons/cards can
+ // start a horizontal swipe without losing their normal tap behavior.
+ const blocked='input,select,textarea,[contenteditable],dialog,[role="slider"],.bar';
+ const clearVisual=()=>{
+   surface.style.transform='';
+   surface.style.opacity='';
+   surface.style.transition='';
+   surface.style.willChange='';
+ };
  surface.addEventListener('touchstart',e=>{
-   if(e.touches.length!==1||e.target.closest(blocked)||document.querySelector('dialog[open]')){gesture=null;return;}
+   if(e.touches.length!==1||e.target.closest(blocked)||document.querySelector('dialog[open]')){
+     gesture=null;return;
+   }
    const t=e.touches[0];
-   gesture={x:t.clientX,y:t.clientY,time:Date.now(),locked:false};
+   gesture={x:t.clientX,y:t.clientY,start:performance.now(),axis:null,dx:0};
  },{passive:true});
  surface.addEventListener('touchmove',e=>{
    if(!gesture||e.touches.length!==1)return;
    const t=e.touches[0],dx=t.clientX-gesture.x,dy=t.clientY-gesture.y;
-   if(Math.abs(dy)>18&&Math.abs(dy)>Math.abs(dx))gesture=null;
+   if(!gesture.axis&&Math.max(Math.abs(dx),Math.abs(dy))>10){
+     gesture.axis=Math.abs(dx)>Math.abs(dy)*1.18?'horizontal':'vertical';
+   }
+   if(gesture.axis==='vertical'){gesture=null;clearVisual();return;}
+   if(gesture.axis!=='horizontal')return;
+   gesture.dx=dx;
+   const nextIndex=TAB_ORDER.indexOf(tab)+(dx<0?1:-1);
+   const atEnd=nextIndex<0||nextIndex>=TAB_ORDER.length;
+   const offset=Math.max(-42,Math.min(42,dx*(atEnd?.10:.36)));
+   surface.style.willChange='transform';
+   surface.style.transition='none';
+   surface.style.transform=`translate3d(${offset}px,0,0)`;
+   surface.style.opacity=String(1-Math.min(Math.abs(offset)/500,.08));
  },{passive:true});
- surface.addEventListener('touchcancel',()=>gesture=null,{passive:true});
+ surface.addEventListener('touchcancel',()=>{gesture=null;clearVisual()},{passive:true});
  surface.addEventListener('touchend',e=>{
    const g=gesture;gesture=null;
-   if(!g||e.changedTouches.length!==1||document.querySelector('dialog[open]'))return;
+   if(!g){clearVisual();return;}
    const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
-   if(Math.abs(dx)<82||Math.abs(dx)<Math.abs(dy)*1.5||Date.now()-g.time>1200)return;
+   const horizontal=g.axis==='horizontal'||(Math.abs(dx)>Math.abs(dy)*1.18);
+   const valid=horizontal&&Math.abs(dx)>=44&&Math.abs(dx)>Math.abs(dy)*1.18;
+   clearVisual();
+   if(!valid||document.querySelector('dialog[open]'))return;
    const nextIndex=TAB_ORDER.indexOf(tab)+(dx<0?1:-1);
-   if(nextIndex>=0&&nextIndex<TAB_ORDER.length)activeSection(TAB_ORDER[nextIndex]);
+   if(nextIndex<0||nextIndex>=TAB_ORDER.length)return;
+   // A swipe starting on a button must not also activate its click action.
+   suppressClickUntil=performance.now()+450;
+   activeSection(TAB_ORDER[nextIndex]);
  },{passive:true});
+ surface.addEventListener('click',e=>{
+   if(performance.now()<suppressClickUntil){
+     e.preventDefault();e.stopImmediatePropagation();suppressClickUntil=0;
+   }
+ },true);
 })();
