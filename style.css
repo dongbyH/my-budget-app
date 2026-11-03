@@ -377,3 +377,33 @@ header .monthnav{font-size:14px}
  .category-admin-row{flex-wrap:wrap}
  .category-admin-row .category-admin-actions{width:100%;justify-content:flex-end}
 }
+
+
+/* v5.5 — only requested readability and spacing adjustments */
+/* Home metric numbers: increase prominence without sacrificing the three-column layout. */
+.home-screen .compact-metrics .metric-mini{padding:12px 5px;gap:7px}
+.home-screen .compact-metrics .metric-mini strong,
+.home-screen .compact-metrics .metric-mini strong.metric-em{font-size:clamp(17px,4.45vw,24px);font-weight:850;line-height:1.2;letter-spacing:-.75px;overflow-wrap:anywhere;word-break:keep-all}
+.home-screen .compact-metrics .metric-mini .metric-caption{font-size:clamp(13px,3.5vw,16px)}
+/* Match the remaining-balance emphasis to the percentage badge. */
+.spend-panel .panel-foot .spend-remain{display:inline-flex;align-items:center;padding:4px 9px;border-radius:9px;background:#eef3fb;color:#2e4f7c;font-size:14px;font-weight:850;line-height:1.35}
+.spend-panel .panel-foot .spend-rate{line-height:1.35}
+/* Make the day ledger registration action visually obvious. */
+.day-box .ledger-add-button{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;background:#edf4ff;border:1px solid #cbddff;color:#2166cf;border-radius:12px;padding:8px 13px;min-height:38px;font-size:14px;font-weight:800}
+.day-box .ledger-add-button:active{background:#dceaff}
+/* Restore original horizontal-rectangle statistics card dimensions, reduce only gaps. */
+.page-shell .stats-grid{gap:4px}
+.page-shell .stats-grid .metric-card{min-height:79px;padding:15px 18px;gap:3px 14px}
+.page-shell .stats-grid .metric-label{font-size:15px}
+.page-shell .stats-grid .metric-note{font-size:12px;line-height:1.35}
+.page-shell .stats-grid .metric-value{font-size:clamp(18px,4.7vw,26px)}
+@media(max-width:480px){
+ .home-screen .compact-metrics .metric-mini strong,
+ .home-screen .compact-metrics .metric-mini strong.metric-em{font-size:clamp(16px,4.35vw,21px)}
+ .page-shell .stats-grid .metric-card{min-height:79px;padding:15px 18px}
+}
+@media(max-width:360px){
+ .home-screen .compact-metrics .metric-mini strong,
+ .home-screen .compact-metrics .metric-mini strong.metric-em{font-size:15.5px;letter-spacing:-.65px}
+ .home-screen .compact-metrics .metric-mini .metric-caption{font-size:12.5px}
+}
