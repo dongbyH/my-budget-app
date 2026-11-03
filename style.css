@@ -448,3 +448,35 @@ header .monthnav{font-size:14px}
   .page-shell .stats-grid .metric-value,
   .page-shell:not(.screen-layout) .stats-grid .metric-value{font-size:clamp(20px,5.2vw,25px)}
 }
+
+
+/* v5.7 — home card inner breathing room; statistics readability */
+.home-screen .compact-metrics .metric-mini {
+  padding-left: 13px;
+  padding-right: 9px;
+  box-sizing: border-box;
+}
+.home-screen .compact-metrics .metric-mini .metric-caption,
+.home-screen .compact-metrics .metric-mini strong {
+  text-align: left;
+}
+/* Keep the four-pixel inter-card gap; halve TOP/BOTTOM padding only. */
+.page-shell .stats-grid > .metric-card,
+.page-shell:not(.screen-layout) .stats-grid > .metric-card {
+  min-height: 82px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.page-shell .stats-grid .metric-label,
+.page-shell .stats-grid .metric-note,
+.page-shell .stats-grid .metric-value,
+.page-shell:not(.screen-layout) .stats-grid .metric-label,
+.page-shell:not(.screen-layout) .stats-grid .metric-note,
+.page-shell:not(.screen-layout) .stats-grid .metric-value {
+  color: #182337;
+}
+@media(max-width:400px) {
+  .home-screen .compact-metrics .metric-mini {padding-left: 11px; padding-right: 7px}
+  .page-shell .stats-grid > .metric-card,
+  .page-shell:not(.screen-layout) .stats-grid > .metric-card {min-height: 80px; padding-top: 9px; padding-bottom: 9px}
+}
