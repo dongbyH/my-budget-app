@@ -51,3 +51,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* 꿀꿀가계부: generous breathing room and rounded, larger icon */
 .brand-icon{background:transparent;box-shadow:none;width:35px;height:35px;overflow:hidden;border-radius:12px}.brand-icon img{width:35px;height:35px;object-fit:cover;border-radius:12px}.home-summary-grid{margin-bottom:26px}.forecast{background:linear-gradient(130deg,#eff7ff,#f4fff8)}.forecast .row h2{margin:0}.forecast p{line-height:1.6}.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quick-tile{min-height:68px;background:#f1f6ff;color:#1e3d6c;text-align:left;padding:11px;border-radius:15px;border:1px solid #dbe7f8}.quick-tile b,.quick-tile small{display:block;overflow-wrap:anywhere}.quick-tile small{margin-top:6px;color:#6b7e96;font-size:11px}.row.item{gap:10px}.row.item>.gap{flex-shrink:0}.row.item b{overflow-wrap:anywhere}.row.item .badge{margin-left:6px}#searchResults{max-height:430px;overflow:auto}.forecast .figure{margin-top:8px}@media(max-width:400px){.quick-grid{grid-template-columns:1fr 1fr}.row.item>.gap{gap:5px}.row.item .mini{font-size:11px;padding:7px 6px}}
+
+/* v4.1: soft horizontal page transitions, touch swipe to adjacent main tabs */
+#screen{touch-action:pan-y;overscroll-behavior-x:contain}
+@keyframes tabEnterNext{from{opacity:.55;transform:translateX(19px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tabEnterPrev{from{opacity:.55;transform:translateX(-19px)}to{opacity:1;transform:translateX(0)}}
+#screen.screen-from-right{animation:tabEnterNext .19s ease-out both}
+#screen.screen-from-left{animation:tabEnterPrev .19s ease-out both}
+@media(prefers-reduced-motion:reduce){#screen.screen-from-right,#screen.screen-from-left{animation:none}}
