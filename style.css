@@ -497,3 +497,15 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 .quick-controls > .quick-row {flex:1;min-width:0;}
 .quick-controls > .quick-add {flex:0 0 auto;}
 .quick-controls > .quick-add:only-child {flex:1;}
+
+/* v5.9.2: full-width quick add below the saved items, as in the original box. */
+.quick-controls {display:flex;flex-direction:column;align-items:stretch;gap:9px;}
+.quick-controls > .quick-row {flex:initial;min-width:0;width:100%;}
+.quick-controls > .quick-add,
+.quick-controls > .quick-add:only-child {flex:initial;width:100%;}
+/* DOM order is confirm/save first and cancel last; no visual-only reversal. */
+.btnRow {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.btnRow > button {width:100%;min-height:44px;}
+.btnRow.single-action {grid-template-columns:1fr;}
+.app-message-text {white-space:pre-line;overflow-wrap:anywhere;line-height:1.65;font-size:14px;margin:0 0 20px;color:#536985;}
+.budget-controls:has(#saveBudget), .category-head-actions {display:grid;grid-template-columns:repeat(3,max-content);justify-content:end;}
