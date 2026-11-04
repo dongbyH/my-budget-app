@@ -480,3 +480,14 @@ header .monthnav{font-size:14px}
   .page-shell .stats-grid > .metric-card,
   .page-shell:not(.screen-layout) .stats-grid > .metric-card {min-height: 80px; padding-top: 9px; padding-bottom: 9px}
 }
+
+/* v5.9: preserve the light palette regardless of the OS color preference. */
+:root { color-scheme: only light; }
+html, body { background-color:#f5f8fd; color:#172c4c; }
+dialog { color-scheme:only light; background:#fff; color:#172c4c; }
+.category-type-buttons {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px;}
+.category-type-buttons button {min-height:44px;}
+.installment-fixed-entry small {display:block;color:#667a96;font-size:11px;font-weight:400;margin-top:4px;}
+.installment-fixed-entry > b {white-space:nowrap;}
+.budget-screen .fixed-entry > span:not(.fixed-name) {flex-shrink:0;text-align:right;}
+.budget-screen .fixed-entry > span:not(.fixed-name) > b {display:block;white-space:nowrap;}
