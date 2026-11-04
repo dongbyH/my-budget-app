@@ -1,5 +1,5 @@
 // The cache version must change whenever an update is published.
-const CACHE='ggulggul-ui-v5.9-20261104';
+const CACHE='ggulggul-ui-v5.9.1-20261104';
 const ASSETS=['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./pig-hero.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('my-budget-')||key.startsWith('ggulggul-'))&&key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()]))});

@@ -491,3 +491,9 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 .installment-fixed-entry > b {white-space:nowrap;}
 .budget-screen .fixed-entry > span:not(.fixed-name) {flex-shrink:0;text-align:right;}
 .budget-screen .fixed-entry > span:not(.fixed-name) > b {display:block;white-space:nowrap;}
+
+/* Keep the add action visible while saved quick inputs scroll separately. */
+.quick-controls {display:flex;align-items:stretch;gap:8px;min-width:0;}
+.quick-controls > .quick-row {flex:1;min-width:0;}
+.quick-controls > .quick-add {flex:0 0 auto;}
+.quick-controls > .quick-add:only-child {flex:1;}
