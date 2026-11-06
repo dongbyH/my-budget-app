@@ -15,6 +15,16 @@ const MARKET_CHANGE_CSS=`
 .vnx-widget-root,.single-ticker-widget{position:static!important;overflow:visible!important}
 .vnx-branding{position:absolute!important;top:10px!important;right:10px!important;bottom:auto!important;left:auto!important;transform:none!important}
 `;
+function marketQuoteCss(asset){
+ // The header holds the badge, so the quote needs no reserved right-hand space.
+ const layout='.st-info{padding-right:0!important;width:100%!important;box-sizing:border-box!important}';
+ if(asset.symbol!=='FX:USDKRW')return MARKET_CHANGE_CSS+layout+'.st-currency{display:none!important}';
+ // Keep KRW next to the exchange rate in the available card width.
+ return MARKET_CHANGE_CSS+layout+`.st-price-main{gap:2px!important;max-width:100%!important;white-space:nowrap!important}
+.st-currency{font-size:11px!important;flex-shrink:0!important;white-space:nowrap!important}
+.st-price-main .st-price{font-size:26px!important;letter-spacing:-.5px!important}`;
+}
+
 let marketScrollPosition=0,marketCleanup=()=>{},vunelixModuleRequest=null;
 const VUNELIX_MODULE='https://vunelix.com/assets/bundles/js/widgets/ticker/vunelix-single-ticker.js?v=5.5.7';
 function loadVunelixModule(){
@@ -83,7 +93,7 @@ function wireMarket(){
   // Keep the official logo visible; custom CSS anchors it in the card header.
   const createQuote=()=>{
    const widget=document.createElement('vunelix-single-ticker');
-   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'false','data-animation-mode':'none','data-custom-css':MARKET_CHANGE_CSS}))widget.setAttribute(key,value);
+   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'false','data-animation-mode':'none','data-custom-css':marketQuoteCss(asset)}))widget.setAttribute(key,value);
    widget.setAttribute('aria-label',asset.name+' 지수 시세');return widget;
   };
   const widget=createQuote();
