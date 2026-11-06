@@ -6,6 +6,13 @@ const MARKET_ASSETS=Object.freeze([
  {name:'코스피',symbol:'KRX:KOSPI',unit:'현물 지수 · pt',url:'https://vunelix.com/symbols/KRX-KOSPI'},
  {name:'원·달러',symbol:'FX:USDKRW',unit:'1달러당 원화',url:'https://vunelix.com/symbols/FX-USDKRW'}
 ]);
+// Official widget custom CSS: keep each signed change on a single line.
+// Price precision, font sizes, quotes and the provider branding stay untouched.
+const MARKET_CHANGE_CSS=`
+.st-price-change{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;min-width:max-content!important;margin-left:0!important}
+.st-change{display:inline-flex!important;align-items:baseline!important;flex-wrap:nowrap!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;flex-shrink:0!important}
+.st-change .sign{display:inline!important;flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+`;
 let marketScrollPosition=0,marketCleanup=()=>{},vunelixModuleRequest=null;
 const VUNELIX_MODULE='https://vunelix.com/assets/bundles/js/widgets/ticker/vunelix-single-ticker.js?v=5.5.7';
 function loadVunelixModule(){
@@ -54,7 +61,7 @@ function wireMarket(){
   const asset=MARKET_ASSETS[i];
    target.dataset.provider='vunelix';
    const widget=document.createElement('vunelix-single-ticker');
-   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'true','data-animation-mode':'none'}))widget.setAttribute(key,value);
+   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'true','data-animation-mode':'none','data-custom-css':MARKET_CHANGE_CSS}))widget.setAttribute(key,value);
    widget.setAttribute('aria-label',asset.name+' 지수 시세');
    const status=document.createElement('p');status.className='muted market-loading';status.textContent='시세 연결 중…';status.setAttribute('role','status');
    const credit=document.createElement('a');credit.className='market-vunelix-credit';credit.href=asset.url;credit.target='_blank';credit.rel='noopener noreferrer';credit.textContent='시세 제공 Vunelix';
