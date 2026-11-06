@@ -566,3 +566,10 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 #newsEditorForm textarea {line-height:1.6;resize:vertical;}
 #newsEditorForm .split {grid-template-columns:1fr;gap:0;}
 @media(max-width:360px){.news-heading h2{font-size:23px}.news-story h3{font-size:14px}.news-meta{font-size:9px}.news-admin-screen .btnRow{gap:6px}.news-admin-screen .btnRow button{padding-left:8px;padding-right:8px}}
+
+/* v5.10.1: news detail is a div, so give it the spacing forms already have. */
+.news-detail {padding:22px 20px;}
+#txDialog:has(.news-detail) {max-height:calc(100dvh - 40px);overflow-y:auto;}
+.news-admin-screen #newsExport {font-size:13px;line-height:1.5;}
+#newsDraftSyncStatus .gap {margin-bottom:0;}
+@media(max-width:400px){.news-detail {padding:20px 18px;}}
