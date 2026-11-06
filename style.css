@@ -587,7 +587,7 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 .market-track{display:flex;gap:10px;align-items:stretch;padding:0 2px;width:100%;box-sizing:border-box}
 .market-quote-card{flex:0 0 calc((100% - 24px)/2.15);min-width:144px;max-width:210px;background:#fff;border:1px solid #e1e9f7;border-radius:18px;box-shadow:0 2px 5px rgba(28,61,115,.035);padding:12px 8px 9px;box-sizing:border-box;position:relative}
 .market-quote-title{display:block;min-height:20px;color:#172e53;text-decoration:none;font-size:14px;font-weight:750;padding:0 3px;line-height:1.4;white-space:nowrap}
-.market-unit{display:block;font-size:10px;color:#8190a7;line-height:15px;padding:0 3px;position:absolute;top:33px}
+.market-unit{display:block;font-size:10px;color:#8190a7;line-height:15px;padding:3px 3px 0}
 .market-widget{min-height:148px;padding-top:10px;user-select:none}
 .market-widget iframe{display:block;max-width:100%;border:0;pointer-events:none}
 .market-widget .tradingview-widget-copyright{text-align:center;font-size:9px;line-height:15px;color:#8190a7;padding-top:3px;overflow-wrap:anywhere}
@@ -602,3 +602,6 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 .market-widget[data-provider="vunelix"]{padding-top:12px}
 .market-widget vunelix-single-ticker{display:block;width:100%;max-width:100%;min-width:0;color-scheme:light}
 .market-vunelix-credit{display:block;font-size:10px;line-height:1.6;text-align:center;text-decoration:none;color:#3979e8;margin-top:8px}
+
+/* All four quotes use the same hosted component and heading layout. */
+.market-quote-card .market-widget[data-provider="vunelix"]{padding-top:9px}
