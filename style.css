@@ -597,3 +597,8 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 .market-fallback{font-size:11px;padding:3px}
 .market-viewport:focus-visible,.market-panel a:focus-visible{outline:2px solid #3979e8;outline-offset:-2px}
 .market-viewport.is-dragging{cursor:grabbing;user-select:none}
+
+/* Different providers share the same manual quote-card strip. */
+.market-widget[data-provider="vunelix"]{padding-top:12px}
+.market-widget vunelix-single-ticker{display:block;width:100%;max-width:100%;min-width:0;color-scheme:light}
+.market-vunelix-credit{display:block;font-size:10px;line-height:1.6;text-align:center;text-decoration:none;color:#3979e8;margin-top:8px}
