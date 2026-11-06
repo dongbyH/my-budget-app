@@ -602,3 +602,6 @@ dialog { color-scheme:only light; background:#fff; color:#172c4c; }
 
 /* All four quotes use the same hosted component and heading layout. */
 .market-quote-card .market-widget[data-provider="vunelix"]{padding-top:9px}
+
+/* Reserve a visible corner for the official badge, above the quote value. */
+.market-quote-title{padding-right:34px}

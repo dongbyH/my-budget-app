@@ -6,14 +6,16 @@ const MARKET_ASSETS=Object.freeze([
  {name:'코스피',symbol:'KRX:KOSPI',url:'https://vunelix.com/symbols/KRX-KOSPI'},
  {name:'원·달러',symbol:'FX:USDKRW',url:'https://vunelix.com/symbols/FX-USDKRW'}
 ]);
-// Official widget custom CSS: keep each signed change on a single line.
-// Price precision, font sizes and quote data stay untouched.
+// Official widget custom CSS: single-line changes and visible branding in the card header.
 const MARKET_CHANGE_CSS=`
 .st-price-change{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;min-width:max-content!important;margin-left:0!important}
 .st-change{display:inline-flex!important;align-items:baseline!important;flex-wrap:nowrap!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;flex-shrink:0!important}
 .st-change .sign{display:inline!important;flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+:host{position:static!important;overflow:visible!important}
+.vnx-widget-root,.single-ticker-widget{position:static!important;overflow:visible!important}
+.vnx-branding{position:absolute!important;top:10px!important;right:10px!important;bottom:auto!important;left:auto!important;transform:none!important}
 `;
-let marketScrollPosition=0,marketCleanup=()=>{},vunelixModuleRequest=null,marketBrandingFallback=false;
+let marketScrollPosition=0,marketCleanup=()=>{},vunelixModuleRequest=null;
 const VUNELIX_MODULE='https://vunelix.com/assets/bundles/js/widgets/ticker/vunelix-single-ticker.js?v=5.5.7';
 function loadVunelixModule(){
  if(customElements.get('vunelix-single-ticker'))return Promise.resolve();
@@ -25,6 +27,24 @@ function loadVunelixModule(){
   script.onerror=()=>{clearTimeout(timeout);script.remove();vunelixModuleRequest=null;reject(Error('시세 위젯 연결 실패'))};
   document.head.append(script);
  });return vunelixModuleRequest;
+}
+
+// Format only the Nasdaq current-price text; leave quote state and change fields alone.
+const NASDAQ_PRICE_FORMAT=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function watchNasdaqPrice(widget,asset){
+ if(asset.symbol!=='NASDAQ:NDX'||!widget.shadowRoot)return null;
+ const root=widget.shadowRoot;
+ const format=()=>{
+  for(const node of root.querySelectorAll('.st-price')){
+   const raw=node.textContent.trim().replace(/,/g,'');
+   if(!/^[+-]?\d+(?:\.\d+)?$/.test(raw))continue;
+   const value=Number(raw);if(!Number.isFinite(value))continue;
+   const shown=NASDAQ_PRICE_FORMAT.format(value);
+   if(node.textContent!==shown)node.textContent=shown;
+  }
+ };
+ format();const observer=new MutationObserver(format);
+ observer.observe(root,{childList:true,characterData:true,subtree:true});return observer;
 }
 
 function disposeMarket(){marketCleanup();marketCleanup=()=>{}}
@@ -60,28 +80,18 @@ function wireMarket(){
  targets.forEach((target,i)=>{
   const asset=MARKET_ASSETS[i];target.dataset.provider='vunelix';
   const status=document.createElement('p');status.className='muted market-loading';status.textContent='시세 연결 중…';status.setAttribute('role','status');
-  // Use the provider's supported preference. Do not hide/remove its branding DOM.
-  // If the provider rejects the option, preserve quotes with its default mode.
-  const createQuote=requestRemoval=>{
+  // Keep the official logo visible; custom CSS anchors it in the card header.
+  const createQuote=()=>{
    const widget=document.createElement('vunelix-single-ticker');
-   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'false','data-animation-mode':'none','data-custom-css':MARKET_CHANGE_CSS,...(requestRemoval?{'data-remove-branding':'true'}:{})}))widget.setAttribute(key,value);
+   for(const [key,value] of Object.entries({'data-symbol':asset.symbol,'data-theme':'light','data-show-symbol':'false','data-show-full-name':'false','data-show-flag':'false','data-show-change':'true','data-show-update-time':'false','data-animation-mode':'none','data-custom-css':MARKET_CHANGE_CSS}))widget.setAttribute(key,value);
    widget.setAttribute('aria-label',asset.name+' 지수 시세');return widget;
   };
-  const requestRemoval=!marketBrandingFallback,widget=createQuote(requestRemoval);
+  const widget=createQuote();
   target.replaceChildren(status,widget);
   const fail=()=>{if(!target.isConnected)return;status.hidden=false;status.textContent='시세 연결을 확인해 주세요.';status.className='muted market-unavailable';};
   loadVunelixModule().then(()=>{
    if(!target.isConnected)return;status.hidden=true;
-   const root=widget.shadowRoot;if(!requestRemoval||!root)return;
-   let reverted=false;
-   const observer=new MutationObserver(()=>{
-    if(reverted||!target.isConnected||!root.querySelector('.widget-error'))return;
-    reverted=true;observer.disconnect();marketBrandingFallback=true;
-    widget.replaceWith(createQuote(false));
-   });
-   observer.observe(root,{childList:true,subtree:true});observers.push(observer);
-   // Covers a synchronous error rendered before the observer was connected.
-   if(root.querySelector('.widget-error')){reverted=true;observer.disconnect();marketBrandingFallback=true;widget.replaceWith(createQuote(false));}
+   const observer=watchNasdaqPrice(widget,asset);if(observer)observers.push(observer);
   }).catch(fail);
  });
 
