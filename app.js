@@ -76,10 +76,84 @@ function activeSection(name){
   tab=name;render();window.scrollTo(0,0);
 }
 function changeMonth(k){if(budgetEdit){appAlert('예산 수정완료 또는 취소 후 기간을 변경해 주세요.');return;}if(tab==='ledger'){ledgerMonth=plusM(ledgerMonth,k);selected=ledgerMonth+'-01'}else{month=plusM(month,k)}render()}
-async function txAdd(e){e.preventDefault();let f=new FormData(e.target),amount=amt(f.get('amount')),date=String(f.get('date')||''),type=String(f.get('type')||'expense'),catid=String(f.get('categoryId')||''),c=db.categories.find(x=>x.id===catid);if(!amount||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)||iso(fromISO(date))!==date||!c||c.type!==type)return appAlert('날짜·금액·카테고리를 확인해 주세요.');let data={date,amount,type,categoryId:c.id,category:c.name,memo:String(f.get('memo')||'').trim(),treatment:type==='expense'?String(f.get('treatment')||'living'):'living'};if(editing){let t=db.transactions.find(t=>t.id===editing);if(t)Object.assign(t,data)}else{let duplicate=db.transactions.some(t=>t.date===date&&t.amount===amount&&t.type===type&&t.memo===data.memo&&t.categoryId===catid);if(duplicate&&!await appConfirm('같은 날짜·금액·내용의 거래가 있습니다. 그래도 등록할까요?'))return;db.transactions.push({id:id(),...data})}editing=null;$('txDialog').close();selected=date;if(tab==='ledger')ledgerMonth=ym(fromISO(date));else month=activeBudgetMonth(fromISO(date));persist()}
+async function txAdd(event) {
+  event.preventDefault();
+  const fields = new FormData(event.target);
+  const amount = amt(fields.get('amount'));
+  const date = String(fields.get('date') || '');
+  const type = String(fields.get('type') || 'expense');
+  const categoryId = String(fields.get('categoryId') || '');
+  const subcategoryId = String(fields.get('subcategoryId') || '');
+  const category = catById(categoryId);
+  const child = transactionSubcategory({subcategoryId}, category);
+  if (!amount || !/^\d{4}-\d{2}-\d{2}$/.test(date) || iso(fromISO(date)) !== date ||
+      !category || category.type !== type || (subcategoryId && !child)) {
+    return appAlert('날짜·금액·카테고리를 확인해 주세요.');
+  }
+  const data = {
+    date, amount, type, categoryId, subcategoryId, category: category.name,
+    memo: String(fields.get('memo') || '').trim(),
+    treatment: type === 'expense' ? String(fields.get('treatment') || 'living') : 'living'
+  };
+  if (editing) {
+    const record = db.transactions.find(item => item.id === editing);
+    if (record) Object.assign(record, data);
+  } else {
+    const duplicate = db.transactions.some(item =>
+      item.date === date && item.amount === amount && item.type === type && item.memo === data.memo &&
+      item.categoryId === categoryId && (item.subcategoryId || '') === subcategoryId
+    );
+    if (duplicate && !await appConfirm('같은 날짜·금액·내용의 거래가 있습니다. 그래도 등록할까요?')) return;
+    db.transactions.push({id: id(), ...data});
+  }
+  editing = null;
+  $('txDialog').close();
+  selected = date;
+  if (tab === 'ledger') ledgerMonth = ym(fromISO(date));
+  else month = activeBudgetMonth(fromISO(date));
+  persist();
+}
 function editTx(txid){let t=db.transactions.find(x=>x.id===txid);if(!t)return;editing=txid;openTx(t)}async function removeTx(txid){if(!await appConfirm('이 거래를 삭제하시겠습니까?'))return;db.transactions=db.transactions.filter(t=>t.id!==txid);persist()}
-const legacyCategories=['식비','카페','교통','쇼핑','생활','취미','의료','경조사','기타'];
-function openTx(t={}){editing=t.id||null;const dialog=$('txDialog'),type=t.type||'expense',cat=t.categoryId||db.categories.find(x=>x.name===t.category&&x.type===type)?.id||'';dialog.innerHTML=`<form id="txForm"><div class="title">${t.id?'거래 수정':'거래 등록'}</div><div class="split"><div class="field"><label>날짜</label><input name="date" type="date" value="${esc(t.date||selected||iso(today))}" required></div><div class="field"><label>구분</label><select name="type" id="txType"><option value="expense" ${type==='expense'?'selected':''}>지출</option><option value="income" ${type==='income'?'selected':''}>추가 수입</option></select></div></div><div class="split"><div class="field"><label>금액</label><input type="number" name="amount" min="1" required value="${t.amount||''}"></div><div class="field"><label>카테고리</label><select name="categoryId" id="txCategory" required></select></div></div><div class="field"><label>내용</label><input name="memo" value="${esc(t.memo||'')}" placeholder="예: 점심, 중고판매"></div><div class="field" id="txTreatWrap"><label>생활비 계산</label><select name="treatment"><option value="living" ${t.treatment!=='fixedPaid'?'selected':''}>일반 생활비 지출</option><option value="fixedPaid" ${t.treatment==='fixedPaid'?'selected':''}>이미 고정비·할부로 차감한 결제 (중복 차감 제외)</option></select></div><div class="btnRow"><button type="submit" class="primary">${t.id?'수정 저장':'거래 저장'}</button><button type="button" class="outline" id="cancelTx">취소</button></div></form>`;dialog.showModal();let refreshCat=()=>{let ty=$('txType').value;let opts=db.categories.filter(c=>c.type===ty&&!c.archived&&(c.active||c.id===cat));$('txCategory').innerHTML=opts.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}${c.active?'':' (사용 중지)'}</option>`).join('');$('txCategory').value=opts.some(c=>c.id===cat)?cat:(opts[0]?.id||'');$('txTreatWrap').hidden=ty!=='expense'};$('txType').onchange=refreshCat;refreshCat();$('cancelTx').onclick=()=>{editing=null;dialog.close()};$('txForm').onsubmit=txAdd}
+function openTx(record = {}) {
+  editing = record.id || null;
+  const dialog = $('txDialog');
+  const type = record.type || 'expense';
+  const categoryId = record.categoryId || db.categories.find(
+    item => item.name === record.category && item.type === type
+  )?.id;
+  dialog.innerHTML = `<form id="txForm">
+    <div class="title">${record.id ? '거래 수정' : '거래 등록'}</div>
+    <div class="split">
+      <div class="field"><label>날짜</label><input name="date" type="date" value="${esc(record.date || selected || iso(today))}" required></div>
+      <div class="field"><label for="txType">구분</label><select name="type" id="txType">
+        <option value="expense" ${type === 'expense' ? 'selected' : ''}>지출</option>
+        <option value="income" ${type === 'income' ? 'selected' : ''}>추가 수입</option>
+      </select></div>
+    </div>
+    <div class="field"><label>금액</label><input type="number" name="amount" min="1" required value="${esc(record.amount || '')}"></div>
+    ${categoryField()}
+    <div class="field"><label>내용</label><input name="memo" value="${esc(record.memo || '')}" placeholder="예: 점심, 중고판매"></div>
+    <div class="field" id="txTreatWrap" ${type !== 'expense' ? 'hidden' : ''}><label>생활비 계산</label>
+      <select name="treatment">
+        <option value="living" ${record.treatment !== 'fixedPaid' ? 'selected' : ''}>일반 생활비 지출</option>
+        <option value="fixedPaid" ${record.treatment === 'fixedPaid' ? 'selected' : ''}>이미 고정비·할부로 차감한 결제 (중복 차감 제외)</option>
+      </select>
+    </div>
+    <div class="btnRow"><button type="submit" class="primary">${record.id ? '수정 저장' : '거래 저장'}</button>
+      <button type="button" class="outline" id="cancelTx">취소</button></div>
+  </form>`;
+  const form = $('txForm');
+  const typeSelect = $('txType');
+  const setCategory = bindCategoryField(form, () => typeSelect.value, {...record, categoryId});
+  typeSelect.onchange = () => {
+    $('txTreatWrap').hidden = typeSelect.value !== 'expense';
+    if (typeSelect.value === type) setCategory(categoryId, record.subcategoryId);
+    else setCategory();
+  };
+  $('cancelTx').onclick = () => { editing = null; dialog.close(); };
+  form.onsubmit = txAdd;
+  dialog.showModal();
+}
 function rowsHTML(rows){if(!rows.length)return '<div class="empty muted">등록된 내역이 없습니다.</div>';return [...rows].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map((t,i)=>`<div class="toss-transaction"><span class="ui-glyph ${t.type==='income'?'green-tone':['blue','amber','pink','violet'][i%4]}">${uiIcon(uiTxKind(t))}</span><div class="transaction-main"><b>${esc(t.memo||t.name||catName(t)||'거래')}</b><small>${esc(t.date)} · ${esc(catName(t))}${t.installmentId?' · '+t.number+'/'+t.months+'회차 할부':''}${t.treatment==='fixedPaid'?' · 이미 예산 차감':''}</small></div><div class="transaction-tail"><b class="${t.type==='income'?'blue-text':''}">${t.type==='income'?'+':'−'}${won(t.amount)}</b>${t.installmentId?'<span class="tiny-badge">할부 자동</span>':`<span class="edit-actions"><button class="text-link" data-edit="${esc(t.id)}">수정</button><button class="text-link red" data-delete="${esc(t.id)}">삭제</button></span>`}</div></div>`).join('')}
 
 
@@ -117,34 +191,7 @@ const uiIcon=(kind)=>{
  return `<svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[kind]||paths.wallet}</svg>`;
 };
 
-// Category icon catalog. Only icon keys are persisted; historical transaction amounts are untouched.
-// Settings category controls are intentionally hidden until the user enters edit mode.
-let categoryEdit=false, categoryOpen=false, categoryDraft=null;
-function viewCategories(){return categoryEdit&&categoryDraft?categoryDraft:db.categories;}
-function findCategoryDraft(cid){return categoryDraft?.find(c=>c.id===cid);}
-function categoryCancel(){categoryEdit=false;categoryDraft=null;render();}
-function categorySave(){
- if(!categoryEdit||!categoryDraft)return;
- for(const type of ['expense','income']){
-  const active=categoryDraft.filter(c=>c.type===type&&c.active!==false&&!c.archived);
-  if(!active.length)return appAlert(type==='expense'?'지출 카테고리는 최소 1개 필요합니다.':'수입 카테고리는 최소 1개 필요합니다.');
-  const names=active.map(c=>c.name.trim());
-  if(new Set(names).size!==names.length||names.some(n=>!n))return appAlert('카테고리 이름이 중복되거나 비어 있습니다.');
- }
- const keep=[];
- for(const item of categoryDraft){
-  if(item.archived){
-   const used=db.transactions.some(t=>t.categoryId===item.id);
-   if(used){keep.push({...item,active:false,archived:true})}
-   continue;
-  }
-  keep.push({...item});
- }
- const liveIds=new Set(keep.filter(c=>!c.archived).map(c=>c.id));
- db.quickTemplates=db.quickTemplates.filter(q=>liveIds.has(q.categoryId));
- db.categories=keep;
- categoryEdit=false;categoryDraft=null;persist();
-}
+// Category icon catalog.
 const CATEGORY_ICONS=[
  ['food','식비'],['coffee','카페'],['card','카드'],['house','주거'],['phone','통신'],['wallet','급여'],
  ['pig','저축'],['coins','금융'],['receipt','기타'],['calendar','정기'],['chart','투자'],['shopping','쇼핑'],
@@ -171,15 +218,6 @@ function categoryIconFor(cat){
  return 'receipt';
 }
 function categoryIconMarkup(cat){return uiIcon(categoryIconFor(cat));}
-function openCategoryIconPicker(categoryId){
- if(!categoryEdit||!categoryDraft)return;
- const cat=findCategoryDraft(categoryId);if(!cat)return;
- const dialog=$('txDialog');
- dialog.innerHTML=`<div class="icon-picker"><div class="picker-head"><h2>${esc(cat.name)} 아이콘 선택</h2><button class="icon-picker-close" id="closeIconPicker" type="button" aria-label="닫기">✕</button></div><p class="muted">수정완료를 누르면 아이콘 변경이 저장됩니다. 기존 거래금액은 유지됩니다.</p><div class="icon-choice-grid">${CATEGORY_ICONS.map(([key,label])=>`<button type="button" class="icon-choice ${categoryIconFor(cat)===key?'selected':''}" data-pick-icon="${key}" aria-label="${label} 아이콘" aria-pressed="${categoryIconFor(cat)===key}"><span class="ui-glyph blue">${uiIcon(key)}</span><span>${label}</span></button>`).join('')}</div></div>`;
- dialog.showModal();
- $('closeIconPicker').onclick=()=>dialog.close();
- dialog.querySelectorAll('[data-pick-icon]').forEach(b=>b.onclick=()=>{cat.icon=b.dataset.pickIcon;dialog.close();render()});
-}
 
 const uiTxKind=t=>{const chosen=catById(t.categoryId);if(chosen)return categoryIconFor(chosen);const c=String(catName(t)+' '+(t.memo||'')).toLowerCase();return t.type==='income'?'wallet':/카페|커피|스타벅스|투썸/.test(c)?'coffee':/식비|점심|저녁|아침|음식|식당/.test(c)?'food':/월세|주거|관리비|집/.test(c)?'house':/교통|버스|택시/.test(c)?'card':'receipt'};
 const uiTag=(name,symbol='wallet',tint='blue')=>`<span class="ui-glyph ${tint}">${uiIcon(symbol)}</span><span>${esc(name)}</span>`;
@@ -236,10 +274,10 @@ function ledger(){const month=ledgerMonth;
 }
 
 function formatShort(v){return Math.abs(v)>=1000000?(v/10000).toFixed(0)+'만':Math.round(v).toLocaleString('ko-KR')}
-function stats(){let c=finance(month),by={};c.rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid').forEach(t=>{let k=catName(t);by[k]=(by[k]||0)+amt(t.amount)});return `<div class="page-shell"><section class="page-head page-top"><div><p class="eyebrow">이번 달 소비 분석</p><h2>통계</h2><p class="muted">지출 흐름과 비중을 한눈에 확인하세요.</p></div></section><section class="metrics-grid stats-grid"><article class="card metric-card"><div class="metric-label">생활비 지출</div><div class="metric-value">${won(c.exp)}</div><div class="metric-note">이번 예산 기간 기준</div></article><article class="card metric-card"><div class="metric-label">하루 평균</div><div class="metric-value">${won(c.elapsed?c.exp/c.elapsed:0)}</div><div class="metric-note">현재까지 평균</div></article><article class="card metric-card"><div class="metric-label">하루 예산</div><div class="metric-value">${won(c.daily)}</div><div class="metric-note">목표 예산</div></article></section><section class="card"><div class="section-inline"><div><p class="eyebrow">지출 비중</p><h3>카테고리별 지출</h3></div></div>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="item"><div class="row"><b>${esc(k)}</b><b>${won(v)}</b></div><div class="bar space"><div style="width:${c.exp?100*v/c.exp:0}%"></div></div></div>`).join('')||'<div class="empty">지출 내역이 없습니다.</div>'}</section><section class="card"><div class="section-inline"><div><p class="eyebrow">구성 요약</p><h3>고정비 분석</h3></div></div><div class="overview-list"><div class="overview-row"><span>일반 고정지출</span><b>${won(c.normal)}</b></div><div class="overview-row"><span>할부 자동반영</span><b>${won(c.instTotal)}</b></div><div class="overview-row"><span>추가 수입</span><b class="blue">+${won(c.extra)}</b></div></div></section></div>`}
-function settings(){return `<div class="page-shell"><section class="page-head page-top"><div><p class="eyebrow">앱 관리</p><h2>설정</h2><p class="muted">카테고리, 빠른 입력, 백업을 관리할 수 있습니다.</p></div></section><section class="card"><div class="section-inline"><div><p class="eyebrow">기본 설정</p><h3>예산 계산 방식</h3></div></div><div class="field"><label>예산 계산 기간</label><select id="mode"><option value="calendar" ${db.settings.mode==='calendar'?'selected':''}>매월 1일 ~ 말일</option><option value="payday" ${db.settings.mode==='payday'?'selected':''}>월급일 ~ 다음 월급일 전날</option></select></div><div class="field"><label>월급일</label><select id="payday">${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${num(db.settings.payday)===i+1?'selected':''}>${i+1}일</option>`).join('')}</select></div><div class="notice">할부는 매월 고정지출에 자동 포함되고 종료 후 자동 제외됩니다. 기존 할부의 기간별 금액은 유지됩니다. 기본 월수입은 기간당 한 번만 계산됩니다.</div></section><section class="card category-panel"><div class="section-inline category-header"><div><p class="eyebrow">분류 관리</p><h3>카테고리 관리</h3><p class="muted category-help">설정한 카테고리를 펼쳐 확인할 수 있습니다.</p></div>${categoryEdit?`<div class="gap category-head-actions"><button class="primary mini" id="saveCategories">수정완료</button><button class="outline mini" id="newCat">+ 추가</button><button class="ghost mini" id="cancelCategories">취소</button></div>`:`<button class="outline" id="editCategories">수정</button>`}</div><button type="button" class="category-toggle" id="toggleCategories" aria-expanded="${categoryOpen}"><span class="category-toggle-copy"><b>카테고리 목록</b><small>지출 ${viewCategories().filter(c=>c.type==='expense'&&!c.archived).length}개 · 수입 ${viewCategories().filter(c=>c.type==='income'&&!c.archived).length}개</small></span><span class="accordion-chevron">${categoryOpen?'⌃':'⌄'}</span></button>${categoryOpen?`<div class="category-list-content"><div class="category-subheading">지출 카테고리</div>${categoryList('expense')}<div class="category-subheading">수입 카테고리</div>${categoryList('income')}${categoryEdit?'<p class="muted category-archive-note">삭제된 카테고리의 과거 거래는 그대로 남으며 통계에도 유지됩니다.</p>':''}</div>`:''}</section><section class="card"><div class="section-inline"><div><p class="eyebrow">빠른 등록</p><h3>빠른 지출 관리</h3></div><button class="outline" id="addQuick">+ 추가</button></div>${db.quickTemplates.length?db.quickTemplates.map(q=>`<div class="row item"><div><b>${esc(q.name)}</b><div class="muted">${won(q.amount)} · ${esc(catById(q.categoryId)?.name||'기타')}</div></div><div class="gap"><button class="secondary mini" data-qedit="${esc(q.id)}">수정</button><button class="danger mini" data-qdel="${esc(q.id)}">삭제</button></div></div>`).join(''):'<div class="empty">저장된 빠른 지출이 없습니다.</div>'}</section><section class="card"><div class="section-inline"><div><p class="eyebrow">백업</p><h3>전체 데이터 백업 · 복원</h3></div></div><p class="muted">기록은 이 기기에만 저장됩니다. 업데이트·기기 변경 전에 백업하세요.</p><button class="primary" id="backup">JSON 전체 백업</button><div class="space"><label>백업 복원 (기존 기록 교체)</label><input id="restore" type="file" accept=".json,application/json"></div></section><section class="card"><div class="section-inline"><div><p class="eyebrow">앱 정보</p><h3>업데이트 확인</h3></div></div><button id="checkUpdate" class="outline">업데이트 확인</button><div id="updateStatus" class="update-status" aria-live="polite"></div><p class="muted">꿀꿀가계부 · 데이터는 기기별 보관 · 자동 동기화 없음</p></section></div>`}
+function stats(){const c=finance(month);return `<div class="page-shell"><section class="page-head page-top"><div><p class="eyebrow">이번 달 소비 분석</p><h2>통계</h2><p class="muted">지출 흐름과 비중을 한눈에 확인하세요.</p></div></section><section class="metrics-grid stats-grid"><article class="card metric-card"><div class="metric-label">생활비 지출</div><div class="metric-value">${won(c.exp)}</div><div class="metric-note">이번 예산 기간 기준</div></article><article class="card metric-card"><div class="metric-label">하루 평균</div><div class="metric-value">${won(c.elapsed?c.exp/c.elapsed:0)}</div><div class="metric-note">현재까지 평균</div></article><article class="card metric-card"><div class="metric-label">하루 예산</div><div class="metric-value">${won(c.daily)}</div><div class="metric-note">목표 예산</div></article></section>${categoryStatsPanel(c)}<section class="card"><div class="section-inline"><div><p class="eyebrow">구성 요약</p><h3>고정비 분석</h3></div></div><div class="overview-list"><div class="overview-row"><span>일반 고정지출</span><b>${won(c.normal)}</b></div><div class="overview-row"><span>할부 자동반영</span><b>${won(c.instTotal)}</b></div><div class="overview-row"><span>추가 수입</span><b class="blue">+${won(c.extra)}</b></div></div></section></div>`}
+function settings(){return `<div class="page-shell"><section class="page-head page-top"><div><p class="eyebrow">앱 관리</p><h2>설정</h2><p class="muted">카테고리, 빠른 입력, 백업을 관리할 수 있습니다.</p></div></section><section class="card"><div class="section-inline"><div><p class="eyebrow">기본 설정</p><h3>예산 계산 방식</h3></div></div><div class="field"><label>예산 계산 기간</label><select id="mode"><option value="calendar" ${db.settings.mode==='calendar'?'selected':''}>매월 1일 ~ 말일</option><option value="payday" ${db.settings.mode==='payday'?'selected':''}>월급일 ~ 다음 월급일 전날</option></select></div><div class="field"><label>월급일</label><select id="payday">${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${num(db.settings.payday)===i+1?'selected':''}>${i+1}일</option>`).join('')}</select></div><div class="notice">할부는 매월 고정지출에 자동 포함되고 종료 후 자동 제외됩니다. 기존 할부의 기간별 금액은 유지됩니다. 기본 월수입은 기간당 한 번만 계산됩니다.</div></section>${categorySettingsPanel()}<section class="card"><div class="section-inline"><div><p class="eyebrow">빠른 등록</p><h3>빠른 지출 관리</h3></div><button class="outline" id="addQuick">+ 추가</button></div>${db.quickTemplates.length?db.quickTemplates.map(q=>`<div class="row item"><div><b>${esc(q.name)}</b><div class="muted">${won(q.amount)} · ${esc(catName(q))}</div></div><div class="gap"><button class="secondary mini" data-qedit="${esc(q.id)}">수정</button><button class="danger mini" data-qdel="${esc(q.id)}">삭제</button></div></div>`).join(''):'<div class="empty">저장된 빠른 지출이 없습니다.</div>'}</section><section class="card"><div class="section-inline"><div><p class="eyebrow">백업</p><h3>전체 데이터 백업 · 복원</h3></div></div><p class="muted">기록은 이 기기에만 저장됩니다. 업데이트·기기 변경 전에 백업하세요.</p><button class="primary" id="backup">JSON 전체 백업</button><div class="space"><label>백업 복원 (기존 기록 교체)</label><input id="restore" type="file" accept=".json,application/json"></div></section><section class="card"><div class="section-inline"><div><p class="eyebrow">앱 정보</p><h3>업데이트 확인</h3></div></div><button id="checkUpdate" class="outline">업데이트 확인</button><div id="updateStatus" class="update-status" aria-live="polite"></div><p class="muted">꿀꿀가계부 · 데이터는 기기별 보관 · 자동 동기화 없음</p></section></div>`}
 function render(){disposeMarket();let disp=$('screen');$('monthLabel').textContent=(tab==='ledger'?ledgerMonth:month).replace('-','년 ')+'월';$('prev').closest('.monthnav').hidden=tab==='news';const currentNav=tab==='budget'?'home':tab;$('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.tab===currentNav));disp.innerHTML=({home,budget,ledger,stats,news,settings})[tab]();if(swipeDirection){disp.classList.remove('screen-from-left','screen-from-right');void disp.offsetWidth;disp.classList.add(swipeDirection>0?'screen-from-right':'screen-from-left');swipeDirection=0;}wire()}
-function wire(){document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>openTx({type:b.dataset.add,date:tab==='ledger'?selected:iso(new Date())}));document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editTx(b.dataset.edit));document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>removeTx(b.dataset.delete));document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>activeSection(b.dataset.move));if(tab==='home'){document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{let q=db.quickTemplates.find(x=>x.id===b.dataset.quick);if(q)openTx({type:'expense',date:iso(new Date()),amount:q.amount,memo:q.name,categoryId:q.categoryId,category:catById(q.categoryId)?.name||'기타'})});$('quickManage').onclick=()=>activeSection('settings');$('quickAdd').onclick=()=>openQuick()}if(tab==='budget')wireBudget();if(tab==='ledger')wireLedger();if(tab==='settings')wireSettings();wireNews();wireMarket()}
+function wire(){document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>openTx({type:b.dataset.add,date:tab==='ledger'?selected:iso(new Date())}));document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editTx(b.dataset.edit));document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>removeTx(b.dataset.delete));document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>activeSection(b.dataset.move));if(tab==='home'){document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{let q=db.quickTemplates.find(x=>x.id===b.dataset.quick);if(q)openTx({type:'expense',date:iso(new Date()),amount:q.amount,memo:q.name,categoryId:q.categoryId,subcategoryId:q.subcategoryId,category:catById(q.categoryId)?.name||'기타'})});$('quickManage').onclick=()=>activeSection('settings');$('quickAdd').onclick=()=>openQuick()}if(tab==='budget')wireBudget();if(tab==='ledger')wireLedger();if(tab==='settings')wireSettings();if(tab==='stats')wireCategoryStats();wireNews();wireMarket()}
 function wireBudget(){
  const toggle=(name)=>{budgetOpen[name]=!budgetOpen[name];render()};
  $('toggleFixed').onclick=()=>toggle('fixed');$('toggleInst').onclick=()=>toggle('installments');
@@ -264,52 +302,97 @@ function wireBudget(){
 function openInstallment(i={}){let d=$('txDialog');d.innerHTML=`<form id="instForm"><div class="title">${i.id?'할부 수정':'새 할부 등록'}</div><div class="field"><label>결제 내용</label><input name="name" value="${esc(i.name||'')}" required placeholder="예: 노트북"></div><div class="split"><div class="field"><label>총 할부 금액</label><input name="total" type="number" min="1" required value="${i.total||''}"></div><div class="field"><label>할부 개월 수</label><input name="months" type="number" min="2" max="240" required value="${i.months||3}"></div></div><div class="split"><div class="field"><label>첫 예산 월</label><input name="start" type="month" required value="${esc(i.start||month)}"></div><div class="field"><label>카테고리</label><input name="category" value="${esc(i.category||'할부')}"></div></div><div class="notice">선택한 첫 예산 월부터 매월 고정지출에 한 회차씩 자동 포함됩니다. 마지막 회차 이후에는 자동 제외되며 지난 기록은 보존됩니다. 나머지 금액은 마지막 회차에 합산합니다. 월급일 기준에서는 해당 월에 시작하는 예산 기간에 반영합니다. 기존 할부는 이전 기간 배정을 유지합니다. 할부 원금 기준이며 카드사 이자·수수료는 별도입니다.</div><div class="btnRow space"><button type="submit" class="primary">저장</button><button type="button" class="outline" id="cancelInst">취소</button></div></form>`;d.showModal();$('cancelInst').onclick=()=>d.close();$('instForm').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),v={id:i.id||id(),name:String(f.get('name')).trim(),total:amt(f.get('total')),months:Math.floor(num(f.get('months'))),start:String(f.get('start')),category:String(f.get('category')||'할부')};if(!v.name||!v.total||v.months<2||v.months>240||!/^[0-9]{4}-[0-9]{2}$/.test(v.start))return appAlert('할부 내용을 확인하세요.');if(i.id)Object.assign(i,v);else db.installments.push({...v,budgetBasis:'period'});d.close();persist()}}
 function wireLedger(){$('calPrev').onclick=()=>changeMonth(-1);$('calNext').onclick=()=>changeMonth(1);$('openSearch').onclick=()=>{$('searchArea').hidden=false;$('searchArea').scrollIntoView({behavior:'smooth',block:'start'})};$('closeSearch').onclick=()=>{$('searchArea').hidden=true};$('toggleCal').onclick=()=>{calOpen=!calOpen;render()};document.querySelectorAll('[data-day]').forEach(x=>x.onclick=()=>{selected=x.dataset.day;if(!selected.startsWith(ledgerMonth))ledgerMonth=selected.slice(0,7);render()});$('csvExport').onclick=exportCsv;$('csvInput').onchange=e=>importCsv(e.target.files[0]);let ids=['searchText','searchType','searchCat','searchFrom','searchTo','searchMin','searchMax'];ids.forEach((x,i)=>{let el=$(x);el.oninput=()=>{searchState[['text','type','cat','from','to','min','max'][i]]=el.value;refreshSearch()}});$('searchReset').onclick=()=>{searchState={text:'',type:'all',cat:'all',from:'',to:'',min:'',max:''};render()};refreshSearch()}
 function download(filename,contents,type){let blob=new Blob([contents],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function exportCsv(){let rows=[['날짜','구분','금액','카테고리','내용'],...db.transactions.map(t=>[t.date,t.type==='income'?'수입':'지출',t.amount,t.category,t.memo])];download('가계부-거래내역.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8')}
-function parseCsv(text){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(Boolean))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(Boolean))rows.push(row);return rows}
-async function importCsv(file){if(!file)return;let rows=parseCsv((await file.text()).replace(/^\ufeff/,'')),heads=rows.shift()?.map(x=>x.trim())||[];let find=(...xs)=>heads.findIndex(x=>xs.includes(x)),di=find('날짜','거래일자','거래일'),ai=find('금액','거래금액'),ti=find('구분','수입지출'),ci=find('카테고리','분류'),mi=find('내용','메모','거래내용','가맹점명');if(di<0||ai<0)return appAlert('날짜,금액 열이 필요합니다.');let imported=[],pendingCats=[];for(let r of rows){let date=String(r[di]||'').trim().replace(/[./]/g,'-'),mat=date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);if(!mat)continue;date=mat[1]+'-'+mat[2].padStart(2,'0')+'-'+mat[3].padStart(2,'0');if(iso(fromISO(date))!==date)continue;let v=Number(String(r[ai]||'').replace(/[,₩원\s]/g,''));if(!Number.isFinite(v)||!v)continue;let type=ti>=0?(['수입','income'].includes(String(r[ti]||'').trim().toLowerCase())?'income':'expense'):(v>0?'income':'expense'),name=ci>=0?String(r[ci]||'기타'):'기타',cat=[...db.categories,...pendingCats].find(c=>c.type===type&&c.name===name);if(!cat){cat={id:id(),name,type,active:false};pendingCats.push(cat)}imported.push({id:id(),date,type,amount:amt(v),categoryId:cat.id,category:name,memo:mi>=0?r[mi]||'':'',treatment:'living'})}let signature=t=>[t.date,t.type,t.amount,catName(t),t.memo].join('|'),existing=new Set(db.transactions.map(signature)),seen=new Set(existing);let fresh=imported.filter(x=>{let s=signature(x);if(seen.has(s))return false;seen.add(s);return true});if(!fresh.length)return appAlert('새로운 거래가 없습니다.');if(await appConfirm(`${imported.length}건 중 신규 ${fresh.length}건을 가져올까요?`)){db.categories.push(...pendingCats);db.transactions.push(...fresh);persist()}}
-function openCategoryCreate(){
- const dialog=$('txDialog');let type='income';
- dialog.innerHTML=`<form id="categoryCreateForm"><div class="title">카테고리 추가</div><div class="category-type-buttons" role="group" aria-label="카테고리 구분"><button type="button" class="primary" data-category-type="income" aria-pressed="true">수입</button><button type="button" class="outline" data-category-type="expense" aria-pressed="false">지출</button></div><div class="field"><label for="newCategoryName">카테고리 이름</label><input id="newCategoryName" name="name" required autocomplete="off" placeholder="이름을 입력해 주세요"></div><div class="btnRow"><button type="submit" class="primary">추가</button><button type="button" class="outline" id="cancelCategoryCreate">취소</button></div></form>`;
- dialog.querySelectorAll('[data-category-type]').forEach(button=>button.onclick=()=>{
-  type=button.dataset.categoryType;
-  dialog.querySelectorAll('[data-category-type]').forEach(b=>{const chosen=b===button;b.className=chosen?'primary':'outline';b.setAttribute('aria-pressed',String(chosen))});
- });
- $('cancelCategoryCreate').onclick=()=>dialog.close();
- $('categoryCreateForm').onsubmit=e=>{
-  e.preventDefault();const name=$('newCategoryName').value.trim();
-  if(!name)return appAlert('카테고리 이름을 입력해 주세요.');
-  if(categoryDraft.some(c=>!c.archived&&c.type===type&&c.name===name))return appAlert('같은 이름의 카테고리가 있습니다.');
-  categoryDraft.push({id:id(),name,type,active:true});categoryOpen=true;dialog.close();render();
- };
- dialog.showModal();
+function exportCsv() {
+  const rows = [['날짜', '구분', '금액', '카테고리', '내용', '소분류']];
+  for (const record of db.transactions) {
+    const category = catById(record.categoryId);
+    rows.push([
+      record.date, record.type === 'income' ? '수입' : '지출', record.amount,
+      category?.name || record.category, record.memo, transactionSubcategory(record, category)?.name || ''
+    ]);
+  }
+  const csv = rows.map(row => row.map(value => '"' + String(value ?? '').replaceAll('"', '""') + '"').join(','));
+  download('가계부-거래내역.csv', '\ufeff' + csv.join('\r\n'), 'text/csv;charset=utf-8');
 }
+function parseCsv(text){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(Boolean))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(Boolean))rows.push(row);return rows}
+async function importCsv(file) {
+  if (!file) return;
+  const rows = parseCsv((await file.text()).replace(/^\ufeff/, ''));
+  const headers = rows.shift()?.map(value => value.trim()) || [];
+  const column = (...labels) => headers.findIndex(value => labels.includes(value));
+  const dateColumn = column('날짜', '거래일자', '거래일');
+  const amountColumn = column('금액', '거래금액');
+  const typeColumn = column('구분', '수입지출');
+  const categoryColumn = column('카테고리', '분류');
+  const childColumn = column('소분류');
+  const memoColumn = column('내용', '메모', '거래내용', '가맹점명');
+  if (dateColumn < 0 || amountColumn < 0) return appAlert('날짜, 금액 열이 필요합니다.');
+
+  const draft = db.categories.map(category => ({
+    ...category,
+    subcategories: [...subcategories(category)]
+  }));
+  const imported = [];
+  for (const row of rows) {
+    const dateParts = String(row[dateColumn] || '').trim().replace(/[./]/g, '-').match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!dateParts) continue;
+    const date = dateParts[1] + '-' + dateParts[2].padStart(2, '0') + '-' + dateParts[3].padStart(2, '0');
+    if (iso(fromISO(date)) !== date) continue;
+    const value = Number(String(row[amountColumn] || '').replace(/[,₩원\s]/g, ''));
+    if (!Number.isFinite(value) || !value) continue;
+    const type = typeColumn >= 0
+      ? (['수입', 'income'].includes(String(row[typeColumn] || '').trim().toLowerCase()) ? 'income' : 'expense')
+      : (value > 0 ? 'income' : 'expense');
+    const name = String(row[categoryColumn] || '기타').trim() || '기타';
+    const childName = String(row[childColumn] || '').trim();
+    let category = draft.find(item => item.type === type && item.name === name && !item.archived)
+      || draft.find(item => item.type === type && item.name === name);
+    if (!category) {
+      category = {id: id(), name, type, active: false, subcategories: []};
+      draft.push(category);
+    }
+    let child = category.subcategories.find(item => item.name === childName && !item.archived)
+      || category.subcategories.find(item => item.name === childName);
+    if (childName && !child) {
+      child = {id: id(), name: childName};
+      category.subcategories.push(child);
+    }
+    imported.push({
+      id: id(), date, type, amount: amt(value), categoryId: category.id,
+      subcategoryId: child?.id || '', category: name,
+      memo: row[memoColumn] || '', treatment: 'living'
+    });
+  }
+  const byId = new Map(draft.map(category => [category.id, category]));
+  function signature(record) {
+    const category = byId.get(record.categoryId);
+    const child = transactionSubcategory(record, category);
+    return JSON.stringify([record.date, record.type, record.amount, category?.name || record.category,
+      child?.name || '', record.memo]);
+  }
+  const seen = new Set(db.transactions.map(signature));
+  const fresh = imported.filter(record => {
+    const key = signature(record);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  if (!fresh.length) return appAlert('새로운 거래가 없습니다.');
+  if (await appConfirm(`${imported.length}건 중 신규 ${fresh.length}건을 가져올까요?`)) {
+    db.categories = draft;
+    db.transactions.push(...fresh);
+    persist();
+  }
+}
+
 function wireSettings(){
  $('mode').onchange=e=>{db.settings.mode=e.target.value;month=activeBudgetMonth();persist()};
  $('payday').onchange=e=>{db.settings.payday=num(e.target.value);month=activeBudgetMonth();persist()};
  $('checkUpdate').onclick=checkForUpdates;
  $('backup').onclick=()=>download('꿀꿀가계부-백업-'+iso(new Date())+'.json',JSON.stringify(db,null,2),'application/json');
- $('restore').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{let obj=JSON.parse(await file.text());if(!obj||!obj.months||!Array.isArray(obj.transactions)||!obj.settings)throw Error();if(await appConfirm('기존 기록이 백업 내용으로 교체됩니다. 현재 기록을 백업했나요?')){db=Object.assign(initial(),obj);db.installments=Array.isArray(db.installments)?db.installments:[];migrateV4();migrateInstallmentFixedCosts();categoryEdit=false;categoryDraft=null;closeBudgetEdit();today=new Date();month=activeBudgetMonth(today);ledgerMonth=ym(today);selected=iso(today);persist()}}catch{appAlert('유효한 가계부 JSON 백업 파일이 아닙니다.')}};
+ $('restore').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{let obj=JSON.parse(await file.text());if(!obj||!obj.months||!Array.isArray(obj.transactions)||!obj.settings)throw Error();if(await appConfirm('기존 기록이 백업 내용으로 교체됩니다. 현재 기록을 백업했나요?')){db=Object.assign(initial(),obj);db.installments=Array.isArray(db.installments)?db.installments:[];migrateV4();migrateInstallmentFixedCosts();categoryOpen=false;statsCategory='';closeBudgetEdit();today=new Date();month=activeBudgetMonth(today);ledgerMonth=ym(today);selected=iso(today);persist()}}catch{appAlert('유효한 가계부 JSON 백업 파일이 아닙니다.')}};
  $('toggleCategories').onclick=()=>{categoryOpen=!categoryOpen;render()};
- const edit=$('editCategories');if(edit)edit.onclick=()=>{categoryEdit=true;categoryOpen=true;categoryDraft=db.categories.map(c=>({...c}));render()};
- const cancel=$('cancelCategories');if(cancel)cancel.onclick=categoryCancel;
- const save=$('saveCategories');if(save)save.onclick=categorySave;
- const add=$('newCat');if(add)add.onclick=openCategoryCreate;
- document.querySelectorAll('[data-cicon]').forEach(b=>b.onclick=()=>openCategoryIconPicker(b.dataset.cicon));
- document.querySelectorAll('[data-crename]').forEach(b=>b.onclick=async()=>{
-  const c=findCategoryDraft(b.dataset.crename);if(!c)return;
-  const name=await appPrompt('카테고리 이름 변경',c.name);if(!name?.trim())return;
-  if(categoryDraft.some(x=>!x.archived&&x.id!==c.id&&x.type===c.type&&x.name===name.trim()))return appAlert('같은 이름이 있습니다.');
-  c.name=name.trim();render();
- });
- document.querySelectorAll('[data-cdelete]').forEach(b=>b.onclick=async()=>{
-  const c=findCategoryDraft(b.dataset.cdelete);if(!c)return;
-  const remaining=categoryDraft.filter(x=>x.type===c.type&&!x.archived&&x.active!==false&&x.id!==c.id);
-  if(c.active!==false&&!remaining.length)return appAlert('최소 한 개의 카테고리는 남겨야 합니다.');
-  const used=db.transactions.filter(t=>t.categoryId===c.id).length;
-  const message=used?`「${c.name}」 카테고리를 삭제할까요?\n과거 거래 ${used}건은 원래 카테고리로 계속 표시되고 신규 입력 목록에서는 사라집니다.`:`「${c.name}」 카테고리를 삭제할까요?`;
-  if(!await appConfirm(message))return;
-  c.archived=true;c.active=false;render();
- });
+ $('editCategories').onclick=()=>openCategoryEditor();
  $('addQuick').onclick=()=>openQuick();
  document.querySelectorAll('[data-qedit]').forEach(b=>b.onclick=()=>openQuick(db.quickTemplates.find(q=>q.id===b.dataset.qedit)));
  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{if(await appConfirm('이 빠른 입력 항목을 삭제할까요?')){db.quickTemplates=db.quickTemplates.filter(q=>q.id!==b.dataset.qdel);persist()}});
@@ -322,11 +405,45 @@ function migrateV4(){if(!Array.isArray(db.categories)){db.categories=[];const pr
  for(let q of db.quickTemplates){if(!q.id)q.id=id()}
 }
 function catById(v){return db.categories.find(c=>c.id===v)}
-function catName(t){return catById(t.categoryId)?.name||t.category||'기타'}
+function catName(t){return categoryPath(t.categoryId,t.subcategoryId)||t.category||'기타'}
 let searchState={text:'',type:'all',cat:'all',from:'',to:'',min:'',max:''};
 function refreshSearch(){let query=searchState.text.trim().toLowerCase(),list=db.transactions.filter(t=>(searchState.type==='all'||t.type===searchState.type)&&(searchState.cat==='all'||t.categoryId===searchState.cat)&&(!searchState.from||t.date>=searchState.from)&&(!searchState.to||t.date<=searchState.to)&&(!searchState.min||amt(t.amount)>=amt(searchState.min))&&(!searchState.max||amt(t.amount)<=amt(searchState.max))&&(!query||(t.memo||'').toLowerCase().includes(query)||catName(t).toLowerCase().includes(query)));list.sort((a,b)=>b.date.localeCompare(a.date));$('searchCount').textContent=`${list.length}건`;$('searchResults').innerHTML=rowsHTML(list.slice(0,150));$('searchResults').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editTx(b.dataset.edit));$('searchResults').querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>removeTx(b.dataset.delete));if(list.length>150)$('searchResults').insertAdjacentHTML('beforeend','<div class="notice">검색 결과는 최근 150건까지 표시합니다. 날짜·카테고리로 범위를 좁혀 주세요.</div>')}
-function categoryList(type){return viewCategories().filter(c=>c.type===type&&!c.archived).map(c=>`<div class="row item category-admin-row"><span class="ui-glyph blue">${categoryIconMarkup(c)}</span><div class="category-admin-main"><b>${esc(c.name)}</b>${!c.active?'<span class="badge">사용 안 함</span>':''}<div class="muted">기존 거래 ${db.transactions.filter(t=>t.categoryId===c.id).length}건</div></div>${categoryEdit?`<div class="gap category-admin-actions"><button class="outline mini" data-cicon="${esc(c.id)}">아이콘</button><button class="secondary mini" data-crename="${esc(c.id)}">이름변경</button><button class="danger mini" data-cdelete="${esc(c.id)}">삭제</button></div>`:''}</div>`).join('')||'<p class="muted empty">카테고리가 없습니다.</p>'}
-function openQuick(q={}){let d=$('txDialog'),active=db.categories.filter(c=>(c.type==='expense'&&c.active&&!c.archived)||c.id===q.categoryId);d.innerHTML=`<form id="quickForm"><div class="title">${q.id?'빠른 지출 수정':'빠른 지출 추가'}</div><div class="field"><label>이름</label><input name="name" required value="${esc(q.name||'')}" placeholder="예: 회사 점심"></div><div class="field"><label>금액</label><input name="amount" type="number" min="1" required value="${q.amount||''}"></div><div class="field"><label>카테고리</label><select name="categoryId">${active.map(c=>`<option value="${esc(c.id)}" ${q.categoryId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="btnRow"><button type="submit" class="primary">저장</button><button type="button" class="outline" id="cancelQuick">취소</button></div></form>`;d.showModal();$('cancelQuick').onclick=()=>d.close();$('quickForm').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),entry={id:q.id||id(),name:String(f.get('name')||'').trim(),amount:amt(f.get('amount')),categoryId:String(f.get('categoryId')||'')};if(!entry.name||!entry.amount||!catById(entry.categoryId))return appAlert('빠른 입력 항목을 확인해 주세요.');if(q.id)Object.assign(q,entry);else db.quickTemplates.push(entry);d.close();persist()}}
+function openQuick(record = {}) {
+  const dialog = $('txDialog');
+  dialog.innerHTML = `<form id="quickForm">
+    <div class="title">${record.id ? '빠른 지출 수정' : '빠른 지출 추가'}</div>
+    <div class="field"><label>이름</label><input name="name" required value="${esc(record.name || '')}" placeholder="예: 회사 점심"></div>
+    <div class="field"><label>금액</label><input name="amount" type="number" min="1" required value="${esc(record.amount || '')}"></div>
+    ${categoryField()}
+    <div class="btnRow"><button type="submit" class="primary">저장</button>
+      <button type="button" class="outline" id="cancelQuick">취소</button></div>
+  </form>`;
+  const form = $('quickForm');
+  bindCategoryField(form, () => 'expense', record);
+  $('cancelQuick').onclick = () => dialog.close();
+  form.onsubmit = event => {
+    event.preventDefault();
+    const fields = new FormData(form);
+    const entry = {
+      id: record.id || id(),
+      name: String(fields.get('name') || '').trim(),
+      amount: amt(fields.get('amount')),
+      categoryId: String(fields.get('categoryId') || ''),
+      subcategoryId: String(fields.get('subcategoryId') || '')
+    };
+    const category = catById(entry.categoryId);
+    if (!entry.name || !entry.amount || category?.type !== 'expense' || category.archived ||
+        (entry.subcategoryId && !transactionSubcategory(entry, category))) {
+      return appAlert('빠른 입력 항목을 확인해 주세요.');
+    }
+    if (record.id) {
+      const saved = db.quickTemplates.find(item => item.id === record.id);
+      if (saved) Object.assign(saved, entry);
+    } else db.quickTemplates.push(entry);
+    dialog.close();
+    persist();
+  };
+}
 // Do not mark migration complete in local storage until there is valid data to save.
 migrateV4();migrateInstallmentFixedCosts();
 try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){console.warn('기존 데이터 저장 실패: 백업을 확인해 주세요.',e)}
@@ -428,7 +545,7 @@ $('dismissUpdate').onclick=()=>{updateDismissed=true;$('updateBanner').hidden=tr
 // Keep historical browsing and unfinished edits intact.
 function refreshDateContext(){
  const now=new Date();if(iso(now)===iso(today))return;
- if(budgetEdit||categoryEdit||document.querySelector('dialog[open]')||document.activeElement?.matches('input,select,textarea,[contenteditable]'))return;
+ if(budgetEdit||document.querySelector('dialog[open]')||document.activeElement?.matches('input,select,textarea,[contenteditable]'))return;
  const oldActive=activeBudgetMonth(today),oldCalendar=ym(today),oldDate=iso(today);
  if(month===oldActive)month=activeBudgetMonth(now);
  if(ledgerMonth===oldCalendar)ledgerMonth=ym(now);
