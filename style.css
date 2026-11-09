@@ -712,3 +712,6 @@ dialog.category-editor { width: min(94vw, 520px); max-width: 94vw; max-height: 9
   padding: 7px 0 7px 12px; border-left: 1px solid #b8cbe5; font-size: 14px;
 }
 .category-spending-children li span { min-width: 0; overflow-wrap: anywhere; }
+
+.category-admin-main .muted { overflow-wrap: anywhere; }
+.category-admin-row .category-sub-edit { flex: 0 0 auto; white-space: nowrap; min-height: 44px; }

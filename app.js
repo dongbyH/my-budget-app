@@ -393,6 +393,14 @@ function wireSettings(){
  $('restore').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{let obj=JSON.parse(await file.text());if(!obj||!obj.months||!Array.isArray(obj.transactions)||!obj.settings)throw Error();if(await appConfirm('기존 기록이 백업 내용으로 교체됩니다. 현재 기록을 백업했나요?')){db=Object.assign(initial(),obj);db.installments=Array.isArray(db.installments)?db.installments:[];migrateV4();migrateInstallmentFixedCosts();categoryOpen=false;closeBudgetEdit();today=new Date();month=activeBudgetMonth(today);ledgerMonth=ym(today);selected=iso(today);persist()}}catch{appAlert('유효한 가계부 JSON 백업 파일이 아닙니다.')}};
  $('toggleCategories').onclick=()=>{categoryOpen=!categoryOpen;render()};
  $('editCategories').onclick=()=>openCategoryEditor();
+ document.querySelectorAll('[data-edit-subcategories]').forEach(button => {
+   button.onclick = () => {
+     const category = catById(button.dataset.editSubcategories);
+     if (category && !category.archived) {
+       openCategoryEditor(category.type, undefined, category.id, {subcategoriesOnly: true});
+     }
+   };
+ });
  $('addQuick').onclick=()=>openQuick();
  document.querySelectorAll('[data-qedit]').forEach(b=>b.onclick=()=>openQuick(db.quickTemplates.find(q=>q.id===b.dataset.qedit)));
  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{if(await appConfirm('이 빠른 입력 항목을 삭제할까요?')){db.quickTemplates=db.quickTemplates.filter(q=>q.id!==b.dataset.qdel);persist()}});

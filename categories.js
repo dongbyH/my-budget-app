@@ -236,12 +236,13 @@ function chooseCategoryIcon(category, onChange) {
   dialog.showModal();
 }
 
-function openCategoryEditor(initialType = 'expense', onSave = () => {}, initialParent = '') {
+function openCategoryEditor(initialType = 'expense', onSave = () => {}, initialParent = '', {subcategoriesOnly = false} = {}) {
   const draft = db.categories.map(category => ({
     ...category,
     subcategories: subcategories(category).map(child => ({...child}))
   }));
-  const dialog = categoryDialog('category-editor', '카테고리 편집');
+  const title = subcategoriesOnly ? '소분류 관리' : '카테고리 편집';
+  const dialog = categoryDialog('category-editor', title);
   let type = initialType;
   const selected = {[initialType]: initialParent};
   const parentsFor = selectedType => draft.filter(item => item.type === selectedType && !item.archived);
@@ -323,11 +324,11 @@ function openCategoryEditor(initialType = 'expense', onSave = () => {}, initialP
     const children = subcategories(parent).filter(item => !item.archived);
     dialog.innerHTML = `
       <div class="category-dialog-head">
-        <h2>카테고리 편집</h2>
+        <h2>${title}</h2>
         <button type="button" data-close class="category-close" aria-label="닫기">×</button>
       </div>
       <div class="category-editor-body">
-        <div class="category-type-buttons" aria-label="수입·지출 선택">
+        ${subcategoriesOnly ? '' : `<div class="category-type-buttons" aria-label="수입·지출 선택">
           <button type="button" data-tree-type="income" class="${type === 'income' ? 'primary' : 'outline'}" aria-pressed="${type === 'income'}">수입</button>
           <button type="button" data-tree-type="expense" class="${type === 'expense' ? 'primary' : 'outline'}" aria-pressed="${type === 'expense'}">지출</button>
         </div>
@@ -336,7 +337,7 @@ function openCategoryEditor(initialType = 'expense', onSave = () => {}, initialP
           <h3>대분류</h3>
           <div data-parent-type="${type}">${categoryEditorRows(parents, {parentRows: true, selectedId: parent?.id})}</div>
           <button type="button" class="outline" data-add-parent>＋ 대분류 추가</button>
-        </section>
+        </section>`}
         <section class="category-editor-card">
           <h3>${parent ? esc(parent.name) + '의 소분류' : '소분류'}</h3>
           <div data-sub-list>${categoryEditorRows(children, {}) || '<p class="muted">등록된 소분류가 없습니다.</p>'}</div>
@@ -358,12 +359,14 @@ function openCategoryEditor(initialType = 'expense', onSave = () => {}, initialP
       selected[type] = button.dataset.editParent;
       draw();
     });
-    dialog.querySelector('[data-add-parent]').onclick = () => nameEntry(parents);
+    const addParent = dialog.querySelector('[data-add-parent]');
+    if (addParent) addParent.onclick = () => nameEntry(parents);
     dialog.querySelector('[data-add-child]').onclick = () => nameEntry(children, null, parent);
     for (const [list, entries, siblings, owner] of [
       [dialog.querySelector('[data-parent-type]'), draft, parents, null],
       [dialog.querySelector('[data-sub-list]'), subcategories(parent), children, parent]
     ]) {
+      if (!list) continue;
       bindCategoryReorder(list, entries, draw);
       list.querySelectorAll('[data-sort-id]').forEach(row => {
         const entry = siblings.find(item => item.id === row.dataset.sortId);
@@ -387,6 +390,7 @@ function categorySettingsPanel() {
       <span class="ui-glyph blue">${categoryIconMarkup(category)}</span>
       <div class="category-admin-main"><b>${esc(category.name)}</b>
       <div class="muted">${children.map(child => esc(child.name)).join(' · ') || '소분류 없음'}</div></div>
+      <button type="button" class="outline mini category-sub-edit" data-edit-subcategories="${esc(category.id)}" aria-label="${esc(category.name)} 소분류 수정">소분류 수정</button>
     </div>`;
   }).join('');
   return `<section class="card category-panel">
