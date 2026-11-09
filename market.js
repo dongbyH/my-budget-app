@@ -39,22 +39,30 @@ function loadVunelixModule(){
  });return vunelixModuleRequest;
 }
 
-// Format only the Nasdaq current-price text; leave quote state and change fields alone.
-const NASDAQ_PRICE_FORMAT=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-function watchNasdaqPrice(widget,asset){
- if(asset.symbol!=='NASDAQ:NDX'||!widget.shadowRoot)return null;
- const root=widget.shadowRoot;
- const format=()=>{
-  for(const node of root.querySelectorAll('.st-price')){
-   const raw=node.textContent.trim().replace(/,/g,'');
-   if(!/^[+-]?\d+(?:\.\d+)?$/.test(raw))continue;
-   const value=Number(raw);if(!Number.isFinite(value))continue;
-   const shown=NASDAQ_PRICE_FORMAT.format(value);
-   if(node.textContent!==shown)node.textContent=shown;
+// Keep Nasdaq quote text at two decimals without replacing the widget's sign markup.
+const NASDAQ_PRICE_FORMAT = new Intl.NumberFormat('en-US', {
+ minimumFractionDigits: 2, maximumFractionDigits: 2
+});
+function watchNasdaqQuote(widget, asset) {
+ if (asset.symbol !== 'NASDAQ:NDX' || !widget.shadowRoot) return null;
+ const root = widget.shadowRoot;
+ function format() {
+  for (const element of root.querySelectorAll('.st-price, .st-change')) {
+   const textNodes = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+   for (let node = textNodes.nextNode(); node; node = textNodes.nextNode()) {
+    const match = node.data.match(/^(\s*[+−-]?\s*)(\d[\d,]*(?:\.\d+)?)(\s*%?\s*)$/);
+    if (!match) continue;
+    const number = Number(match[2].replace(/,/g, ''));
+    if (!Number.isFinite(number)) continue;
+    const shown = match[1] + NASDAQ_PRICE_FORMAT.format(number) + match[3];
+    if (node.data !== shown) node.data = shown;
+   }
   }
- };
- format();const observer=new MutationObserver(format);
- observer.observe(root,{childList:true,characterData:true,subtree:true});return observer;
+ }
+ format();
+ const observer = new MutationObserver(format);
+ observer.observe(root, {childList: true, characterData: true, subtree: true});
+ return observer;
 }
 
 function disposeMarket(){marketCleanup();marketCleanup=()=>{}}
@@ -101,7 +109,7 @@ function wireMarket(){
   const fail=()=>{if(!target.isConnected)return;status.hidden=false;status.textContent='시세 연결을 확인해 주세요.';status.className='muted market-unavailable';};
   loadVunelixModule().then(()=>{
    if(!target.isConnected)return;status.hidden=true;
-   const observer=watchNasdaqPrice(widget,asset);if(observer)observers.push(observer);
+   const observer=watchNasdaqQuote(widget,asset);if(observer)observers.push(observer);
   }).catch(fail);
  });
 

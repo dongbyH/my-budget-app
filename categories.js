@@ -1,7 +1,6 @@
 'use strict';
 
 let categoryOpen = false;
-let statsCategory = '';
 
 function subcategories(category) {
   return Array.isArray(category?.subcategories) ? category.subcategories : [];
@@ -430,38 +429,30 @@ function categorySpending(rows) {
 }
 
 function categoryStatsPanel(financials) {
-  const groups = categorySpending(financials.rows);
-  const current = groups.get(statsCategory);
-  const all = Array.from(groups.values()).filter(group => group.total > 0).sort((a, b) => b.total - a.total);
-  const lines = current
-    ? subcategories(current.category).filter(child => !child.archived || current.amounts.has(child.id))
-      .map(child => [child.name, current.amounts.get(child.id) || 0])
-    : all.map(group => [group.name, group.total]);
-  if (current && (current.amounts.has('') || !lines.length)) {
-    lines.push(['소분류 미지정', current.amounts.get('') || 0]);
-  }
-  const total = current ? current.total : financials.exp;
+  const groups = Array.from(categorySpending(financials.rows).values())
+    .filter(group => group.total > 0)
+    .sort((a, b) => b.total - a.total);
+  const rows = groups.map(group => {
+    const children = subcategories(group.category)
+      .filter(child => !child.archived || group.amounts.has(child.id))
+      .map(child => [child.name, group.amounts.get(child.id) || 0]);
+    if (group.amounts.has('')) {
+      children.push(['소분류 미지정', group.amounts.get('')]);
+    }
+    return `<details class="category-spending-group">
+      <summary>
+        <span class="category-row-icon" aria-hidden="true">${categoryIconMarkup(group.category || {name: group.name})}</span>
+        <b class="category-spending-name">${esc(group.name)}</b>
+        <strong>${won(group.total)}</strong>
+        <span class="category-spending-chevron" aria-hidden="true">${uiIcon('chevron')}</span>
+      </summary>
+      <ul class="category-spending-children">
+        ${children.map(([name, amount]) => `<li><span>${esc(name)}</span><b>${won(amount)}</b></li>`).join('')}
+      </ul>
+    </details>`;
+  }).join('');
   return `<section class="card category-stats">
     <div class="section-inline"><div><p class="eyebrow">지출 비중</p><h3>카테고리별 지출</h3></div></div>
-    <div class="field"><label for="statsCategory">대분류 선택</label>
-      <select id="statsCategory"><option value="">전체 대분류</option>
-      ${Array.from(groups, ([key, group]) => `<option value="${esc(key)}" ${key === statsCategory ? 'selected' : ''}>${esc(group.name)}${group.category?.archived ? ' (삭제됨)' : ''}</option>`).join('')}
-      </select>
-    </div>
-    ${current ? `<div class="category-stats-total">
-      <span>${esc(current.name)} 총 지출</span><strong>${won(total)}</strong>
-    </div><h4>소분류별 지출</h4>` : ''}
-    ${lines.map(([name, amount]) => `<div class="item"><div class="row"><b>${esc(name)}</b><b>${won(amount)}</b></div>
-      <div class="bar space"><div style="width:${total ? 100 * amount / total : 0}%"></div></div></div>`).join('')
-      || '<div class="empty">지출 내역이 없습니다.</div>'}
+    ${rows || '<div class="empty">지출 내역이 없습니다.</div>'}
   </section>`;
-}
-
-function wireCategoryStats() {
-  $('statsCategory').onchange = event => {
-    statsCategory = event.target.value;
-    event.target.closest('.category-stats').outerHTML = categoryStatsPanel(finance(month));
-    wireCategoryStats();
-    $('statsCategory').focus({preventScroll: true});
-  };
 }
