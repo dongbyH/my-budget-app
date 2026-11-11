@@ -39,9 +39,26 @@ function newsRow(item,{main=false,large=false,preview=false}={}){
  return preview?`<article class="news-story ${large?'news-story-large':''}">${content}</article>`:`<button type="button" class="news-story ${large?'news-story-large':''}" data-news-open="${esc(item.id)}">${content}${!large?'<span class="news-chevron" aria-hidden="true">›</span>':''}</button>`;
 }
 function homeNews(){const list=featuredNews();return `<section id="homeNews" class="toss-card news-panel"><div class="panel-head"><h3>메인 뉴스</h3><button class="text-link" type="button" data-news-tab>전체 뉴스 보기 ›</button></div><p class="news-status muted" role="status">${esc(newsStatus())}</p>${list.length?list.map(item=>newsRow(item,{main:true,large:list.length===1})).join(''):'<div class="news-empty muted">아직 등록된 뉴스가 없습니다.<br>공유 뉴스가 등록되면 여기에 표시됩니다.</div>'}</section>`}
-function newsContent(){const feed=activeNewsFeed();let previous='';const rows=sortedNews().map(item=>{const day=newsDay(item.publishedAt),heading=day!==previous?`<h3 class="news-day">${esc(day)}</h3>`:'';previous=day;return heading+newsRow(item,{main:feed.featuredIds.includes(item.id)})}).join('');return `<div id="newsContent"><div class="news-heading"><div><h2>뉴스</h2><p class="muted">오늘의 소식을 한눈에 확인하세요.</p></div><button type="button" class="outline mini" data-news-refresh ${newsBusy?'disabled':''}>새로고침</button></div><div class="news-list-status"><span class="news-status muted" role="status">${esc(newsStatus())}</span><b>전체 ${feed.items.length}건</b></div>${rows||'<section class="toss-card news-empty">아직 등록된 뉴스가 없습니다.<p class="muted">공유 뉴스가 등록되면 모든 이용자에게 같은 내용이 표시됩니다.</p></section>'}</div>`}
-function news(){return `<div class="screen-layout news-screen">${marketPanel()}${newsContent()}</div>`}
+function newsContent() {
+ const feed = activeNewsFeed();
+ const groups = new Map();
+ for (const item of sortedNews()) {
+  const day = newsDay(item.publishedAt);
+  if (!groups.has(day)) groups.set(day, []);
+  groups.get(day).push(newsRow(item, {main: feed.featuredIds.includes(item.id)}));
+ }
+ const rows = [...groups].map(([day, cards]) =>
+  `<h3 class="news-day">${esc(day)}</h3><div class="news-day-stories">${cards.join('')}</div>`
+ ).join('');
+ return `<div id="newsContent">
+  <div class="news-heading"><div><h2>전체 뉴스</h2></div><button type="button" class="outline mini" data-news-refresh ${newsBusy?'disabled':''}>새로고침</button></div>
+  <div class="news-list-status"><span class="news-status muted" role="status">${esc(newsStatus())}</span><b>전체 ${feed.items.length}건</b></div>
+  ${rows || '<section class="toss-card news-empty">아직 등록된 뉴스가 없습니다.</section>'}
+ </div>`;
+}
+function news(){return `<div class="screen-layout news-screen"><button type="button" class="text-link" data-news-back>‹ 홈으로</button>${marketPanel()}${newsContent()}</div>`}
 function wireNews(){
+ document.querySelectorAll('[data-news-back]').forEach(b=>b.onclick=()=>activeSection('home'));
  document.querySelectorAll('[data-news-open]').forEach(b=>b.onclick=()=>openNewsDetail(b.dataset.newsOpen));
  document.querySelectorAll('[data-news-tab]').forEach(b=>b.onclick=()=>activeSection('news'));
  document.querySelectorAll('[data-news-refresh]').forEach(b=>b.onclick=()=>loadSharedNews());
