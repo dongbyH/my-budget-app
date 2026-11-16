@@ -1,12 +1,174 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-16",
+  "updatedAt": "2026-11-17",
   "featuredIds": [
-    "2026-11-15-oseon-week-ahead-schedule-1116",
-    "2026-11-16-nvidia-jensen-huang-comeback-war-room-ft",
-    "2026-11-16-nvidia-q3-anthropic-ipo-week-preview"
+    "2026-11-17-oseon-market-summary-1116",
+    "2026-11-17-nvidia-board-not-considering-huang-return",
+    "2026-11-17-commerce-remote-ai-chip-access-rule"
   ],
   "items": [
+    {
+      "id": "2026-11-17-oseon-market-summary-1116",
+      "publishedAt": "2026-11-17",
+      "category": "오선의 시황",
+      "title": "[오선의 미국 증시 요약] AI 경계감에 나스닥100 2.7%·반도체 5.3% 급락…엔비디아 4.1%↓",
+      "summary": "오선의 미국 증시 라이브가 2026년 11월 16일(월) 미국 증시 요약을 게시했다. 이번 주 엔비디아 실적 발표와 앤트로픽 기업공개(IPO)를 앞두고 AI 관련주 전반에 경계감이 커지며 주요 지수가 하락 마감했다. 나스닥100은 2.7%, S&P500은 1.9% 내렸고, 반도체주가 다시 흔들리면서 필라델피아 반도체 지수는 5.3% 급락했다. 엔비디아가 4.1% 하락한 데 이어 마이크론과 인텔도 7% 넘게 밀렸고, AMD·델·오라클 등 주요 기술주도 동반 약세를 보였다.\n\n금융주도 부진했다. JP모건의 모바일 뱅킹 앱 서비스 오류에 뱅크오브아메리카·웰스파고 등의 장애 신고가 겹치며 KBW 은행지수가 1.6% 하락했다. 젠슨 황 전 CEO 사임 이후에도 시장의 시선은 엔비디아에 쏠려 있다. FT가 황 전 CEO와 실리콘밸리 우군들의 경영 복귀 논의를 전한 가운데, CNBC가 이사회는 복귀를 검토하지 않는다고 보도하면서 주가에 하방 압력이 더해졌다. 미 상무부가 중국 기업들의 원격 AI 칩 접근 허점을 차단한 것도 부담이었고, 스콧 베센트 재무장관은 '대대적인 쇄신'과 외부 CEO 영입을 촉구한 반면 트럼프 대통령은 복귀론에 힘을 실었다.\n\n투자자들의 관심은 화요일 장 마감 후 예정된 엔비디아 3분기 실적과 이번 주 앤트로픽 상장으로 향하고 있다. 애널리스트들은 엔비디아 매출과 이익이 모두 전년 동기 대비 약 100% 증가할 것으로 본다. 다만 시장의 관심은 수치 자체보다 황 전 CEO 퇴진 이후 새 경영진의 구상과 향후 AI 전략, 대중 수출 규제가 매출에 미칠 영향에 더 쏠릴 전망이다. 네이션와이드의 마크 해킷은 \"AI 투자에서 더 중요한 것은 투자자들이 신규 자금을 넣고 있는지, 아니면 승자와 패자 사이에서 돈만 옮기고 있는지\"라고 짚었고, 베어드의 로스 메이필드는 \"AI 종목이 하루는 폭등하고 다음 날 급락하는 흐름이 반복돼도 투자자들이 공포에 질려 시장을 떠나지는 않는다\"고 말했다. 프리덤 캐피털 마켓의 제이 우즈는 \"실적이 잘 나와도 젠슨 황 퇴진을 둘러싼 의문은 해소되지 않는다\"며 \"33년간 한 명의 CEO가 이끈 회사인 만큼 창업자 없이도 성과를 낼 수 있음을 보여줘야 한다\"고 평가했다.\n\n한편 뉴욕 연은이 발표한 11월 엠파이어스테이트 제조업지수는 7.8로 예상(18.0)과 전월(25.5)을 크게 밑돌았고, 고용지수는 18.1로 전월 10.3에서 개선됐다.",
+      "highlights": [
+        "나스닥100 -2.7%·S&P500 -1.9%, 필라델피아 반도체 -5.3% 급락 — 엔비디아 -4.1%, 마이크론·인텔 7%대 하락",
+        "JP모건·뱅크오브아메리카·웰스파고 앱 장애로 KBW 은행지수 -1.6%…AI 경계감에 금융주까지 약세",
+        "CNBC \"엔비디아 이사회, 황 전 CEO 복귀 검토 안 해\"…FT 복귀 논의 보도에 찬물",
+        "관심은 17일(현지) 장 마감 후 엔비디아 3분기 실적과 19일 앤트로픽 IPO로",
+        "11월 엠파이어스테이트 제조업 7.8로 예상(18.0)·전월(25.5) 큰 폭 하회, 고용지수는 18.1로 개선"
+      ],
+      "relatedStocks": [
+        "NVDA",
+        "MU",
+        "INTC",
+        "AMD",
+        "ORCL",
+        "JPM",
+        "BAC",
+        "WFC"
+      ],
+      "watchPoints": [
+        "엔비디아 실적에서 새 경영진의 AI 전략과 대중 수출 규제 영향에 대한 코멘트가 나오는지",
+        "앤트로픽 IPO 흥행이 AI 투자심리의 다음 분수령이 될지",
+        "반도체 급락이 지수 전반의 조정으로 번지는지, 필수소비재·유틸리티 같은 방어주로의 로테이션이 이어지는지"
+      ],
+      "sourceUrl": "https://www.youtube.com/post/UgkxivzuFtH25h5MMwc2z1gMqM6CBkvWE7uN",
+      "originalText": "【미국 증시 요약 ｜2026년 11월 16일 (월)】\n\n금일 미국 증시는 하락 마감했습니다. \n\n이번 주 엔비디아 실적 발표와 앤트로픽 기업공개(IPO)를 앞두고 인공지능(AI) 관련주 전반에 경계감이 커졌습니다.\n\n나스닥 100 지수는 2.7%, S&P 500 지수는 1.9% 하락했습니다.\n특히 반도체주가 또다시 흔들리면서 필라델피아 반도체 지수는 5.3% 급락했습니다.\n엔비디아가 4.1% 하락한 데 이어 마이크론과 인텔도 7% 넘게 밀렸으며, AMD와 델, 오라클을 비롯한 주요 기술주들도 동반 약세를 보였습니다.\n\n금융주 역시 부진했습니다.\nJP모건의 모바일 뱅킹 앱에서 서비스 오류가 발생했다는 소식에 더해 뱅크오브아메리카, 웰스파고 등에서도 장애 신고가 잇따르며 관련 주가가 내렸고, KBW 은행지수는 1.6% 하락했습니다.\n\n젠슨 황 전 CEO 사임 이후에도 시장의 시선은 여전히 엔비디아에 쏠려 있습니다.   \n\n앞서 파이낸셜타임스(FT)는 황 전 CEO와 실리콘밸리 우군들이 경영 복귀 추진을 논의 중이라고 전한 바 있습니다.\n그러나 CNBC가 소식통을 인용해 엔비디아 이사회는 복귀를 검토하지 않고 있다고 보도하면서 주가에 하방 압력이 가해졌습니다.\n\n여기에 미 상무부가 해외에 구축된 엔비디아의 첨단 AI 칩과 서버를 중국 기업들이 원격으로 빌려 쓰던 규제 허점을 차단하고 나서면서 부담이 더욱 커졌습니다.\n\n스콧 베센트 재무장관도 주말 사이 엔비디아의 '대대적인 쇄신'을 촉구하며 이사회가 외부에서 차기 CEO를 영입해야 한다고 주장했습니다.\n반면 트럼프 대통령은 황 전 CEO의 복귀론에 힘을 실었고, 중국 스파이로 의심받는 여성과의 관계를 둘러싼 국가안보 우려에 대해서도 대수롭지 않다는 반응을 보였습니다.\n\n이러한 가운데 투자자들의 관심은 화요일 장 마감 후 예정된 엔비디아의 3분기 실적 발표로 향하고 있습니다.\n애널리스트들은 엔비디아의 매출과 이익이 모두 전년 동기 대비 약 100% 증가할 것으로 예상하고 있습니다.\n그러나 시장의 관심은 실적 수치 자체보다 황 전 CEO 퇴진 이후 새 경영진의 구상과 향후 AI 전략, 그리고 대중국 수출 규제가 매출에 미칠 영향에 더욱 집중될 전망입니다.\n\n아울러 이번 주 예정된 앤트로픽의 증시 상장에도 관심이 쏠리고 있습니다.\n앤트로픽의 IPO는 AI 산업뿐만 아니라 주식시장 전반의 투자 심리를 가늠할 중요한 시험대가 될 전망입니다.\n\n\n네이션와이드의 마크 해킷은\n\"AI 투자에서 더 중요한 건 엔비디아나 앤트로픽이 기대에 부응하느냐가 아니다\"\n\"투자자들이 신규 자금을 넣고 있는지, 아니면 승자와 패자 사이에서 돈만 옮기고 있는지가 핵심이다\"\n\n\n베어드의 로스 메이필드는\n\"최근 몇 주간 AI 종목들이 하루는 폭등했다가 바로 다음 날 급락하는 흐름이 반복됐다\"\n\"다만 투자자들이 공포에 질려 주식시장을 아예 떠나는 것은 아니다\"\n\n\n프리덤 캐피털 마켓의 제이 우즈는\n\"실적이 잘 나와도 젠슨 황의 퇴진을 둘러싼 의문은 해소되지 않는다\"\n\"33년간 한 명의 CEO가 이끈 회사인 만큼 예상치를 웃도는 것만으로는 부족하다”\n\"엔비디아는 이제 회사를 일군 창업자 없이도 계속 성과를 낼 수 있다는 점을 보여줘야 한다\"\n\n라고 전하였습니다.\n\n\n\n--------------------------------------------------------------------------------------------------------------------\n\n\n\n[미국 증시]\nS&P500 -1.92% → 7,416.59\n다우 -1.41% → 51,608.17\n나스닥100 -2.67% → 27,197.15\n러셀2000 -1.70% → 2,742.94\n\n\n[미국 국채]\n02년 국채 수익률 4.852% → 4.831% ▼ (전일 같은시간대비)\n10년 국채 수익률 5.139% → 5.129% ▼ (전일 같은시간대비)\n\n\n[달러 인덱스]\n103.410 → 103.580 ▲ (전일 같은시간대비)\n\n\n[골드]\n3,887.6 → 3,859.0 ▼ (전일 같은시간대비)\n\n\n[에너지]\nWTI 88.92 → 85.06 ▼ (전일 같은시간대비)\n천연가스 3.242 → 3.121 ▼ (전일 같은시간대비)\n\n\n[경제지표]\n22:30 – 미국 – 11월 엠파이어스테이트 제조업지수 ★★ 7.8 ▼ (예상: 18.0  이전: 25.5)\n23:05 – 연준 – 윌리엄스 총재 (중립/투표권 O)\n02:00 – 연준 – 워시 의장 (중립/투표권 O)\n04:15 – 연준 – 해맥 총재 (매파/투표권 O)\n\n\n\n-----------------------------------------------------------------------------------------------------------------------\n\n\n\n【26년 11월 17일 (화)｜주요 일정】\n\n경제지표\n21:30 - 연준 - 무살렘 총재 (매파/투표권 X)\n22:30 - 미국 - 10월 소매판매 ★★★\n22:30 - 미국 - 10월 수입물가지수 ★\n23:10 - 연준 - 월러 이사 (매파/투표권 O)\n23:15 - 미국 - 10월 산업생산 ★★\n23:30 - 연준 - 해맥 총재 (매파/투표권 O)\n00:00 - 미국 - 11월 NAHB 주택시장지수 ★\n04:25 - 연준 - 윌리엄스 총재 (중립/투표권 O)\n\n\n실적발표 - 장 시작 전\n20:00 - 홈 디포 (HD)\n20:40 - 디즈니 (DIS)\n21:30 - 클라르나 (KLAR)\n\n\n실적발표 - 장 종료 후\n06:20 - 엔비디아 (NVDA)\n\n\n이벤트: 제프리스 헬스케어 컨퍼런스, RBC TMT 컨퍼런스, UBS 바이오팜 컨퍼런스\n\n\n\n-----------------------------------------------------------------------------------------------------------------------\n금일 장 전 시황 자료 ☞ https://saveticker.com/app/report"
+    },
+    {
+      "id": "2026-11-17-nvidia-board-not-considering-huang-return",
+      "publishedAt": "2026-11-17",
+      "category": "반도체",
+      "title": "엔비디아 이사회 \"젠슨 황 복귀 검토 안 해\"…CNBC 보도에 복귀 기대 꺾여",
+      "summary": "엔비디아 이사회가 젠슨 황 전 최고경영자(CEO)의 복귀를 검토하지 않고 있다고 CNBC가 11월 16일(현지시간) 사안에 정통한 소식통을 인용해 보도했다. 소식통은 \"이사회는 황 전 CEO에 대한 조사에 집중하고 있으며 그를 복귀시키기 위한 논의는 진행하지 않고 있다\"고 전했다. 엔비디아는 대형 로펌 왁텔 립턴(Wachtell Lipton)을 선임해 황 전 CEO의 행위가 미국 국가안보나 회사 기밀을 침해했는지 조사하고 있다.\n\n황 전 CEO는 33년간 이끌어 온 엔비디아를 지난주 사임했다. 사내 직원들과의 관계에 더해 중국 정보기관과 연루된 의혹을 받는 앨리스 황과의 혼외 관계가 드러나면서 사임 압력이 커졌다. 실리콘밸리에서는 복귀 여론이 확산해 온라인 청원에 18만 명 넘게 서명했고, 일론 머스크 테슬라 CEO, 개리 탄 와이콤비네이터 CEO, 팀 스위니 에픽게임즈 CEO가 지지 의사를 밝혔다. 도널드 트럼프 대통령도 이날 황 전 CEO 복귀에 \"확실히 반대하지 않을 것\"이라며 \"그는 큰 교훈을 얻었다\"고 말했다. 다만 알티미터캐피털의 브래드 거스트너는 CNBC에 황 전 CEO로부터 복귀 관련 이야기를 들은 적이 없다고 밝혔고, 황 전 CEO 측도 논평을 거부했다.\n\n이사회는 이미 차기 CEO 선임을 지원할 외부 헤드헌팅 업체를 선정하는 절차에 들어갔고, 콜레트 크레스 CFO가 임시 CEO를 맡고 있다. 전문가들은 미 당국과 의회가 엔비디아의 대중 반도체 우회 수출 의혹을 정조준하는 상황에서 지배구조 리스크를 안고 황 전 CEO를 복귀시키기는 현실적으로 어렵다는 분석을 내놓고 있다. 엔비디아는 이날 AI 관련주 약세 속에 4.1% 하락했고, 17일 3분기 실적 발표를 앞두고 있다.",
+      "highlights": [
+        "CNBC \"이사회, 복귀 논의 없이 황 전 CEO 조사에 집중\" — 왁텔 립턴이 국가안보·기밀 침해 여부 수사",
+        "복귀 청원 18만 명 서명, 머스크·개리 탄·팀 스위니 지지…트럼프 \"확실히 반대하지 않을 것\"",
+        "이사회는 차기 CEO 헤드헌팅사 선정 절차에 착수, 콜레트 크레스 CFO가 임시 CEO"
+      ],
+      "relatedStocks": [
+        "NVDA",
+        "AMD",
+        "AVGO",
+        "SMCI",
+        "TSM"
+      ],
+      "watchPoints": [
+        "17일 3분기 실적에서 크레스 임시 CEO가 경영 연속성과 후임 인선에 어떤 메시지를 내는지",
+        "왁텔 립턴 조사 결과와 대중 우회 수출 조사가 복귀 여론의 향방을 가를지",
+        "머스크 등 외부 압력이 이사회의 CEO 인선 결정을 흔드는지"
+      ],
+      "sourceUrl": "https://www.cnbc.com/2026/11/16/nvidia-ceo-jensen-huang.html",
+      "originalText": "Nvidia board is not considering bringing Jensen Huang back as CEO, source tells CNBC (CNBC, 2026년 11월 16일, Seema Mody·Kif Leswing)\n\nNvidia's board of directors is not considering bringing back Jensen Huang as CEO, a person familiar with the matter told CNBC.\n\nThe board is focused on a national security investigation into Huang and is not in discussions to bring him back, the person said.\n\nLast week, Huang resigned from Nvidia as pressure built following his disclosure of an affair and reports of other romances with employees.\n\nThe board is focused on an investigation into Huang, and is not in discussions to bring him back, said the person, who spoke on condition of anonymity in order to discuss internal matters. Nvidia has hired law firm Wachtell Lipton to lead a probe into Huang's conduct and whether it compromised national security or company secrets.\n\nOver the weekend, the Financial Times reported that Huang had discussed coming back with allies. Altimeter Capital's Brad Gerstner told CNBC on Monday that Huang had not discussed a comeback with him. A representative for Huang declined to comment on speculation on Sunday.\n\nMany in the tech world have called for Huang to return as Nvidia CEO. An online petition calling for his reinstatement has drawn 180,000 signatures as well as support from major figures including Elon Musk, Y Combinator CEO Garry Tan and Epic Games CEO Tim Sweeney.\n\nPresident Donald Trump said on Monday that he is open to Jensen Huang returning as CEO of Nvidia. \"It was not put at risk, and our country is now stronger than ever before,\" Trump told reporters when asked about U.S. national security concerns.\n\nOn Friday, a representative for Nvidia's board said it was in the process of selecting a search firm for the Nvidia CEO role."
+    },
+    {
+      "id": "2026-11-17-commerce-remote-ai-chip-access-rule",
+      "publishedAt": "2026-11-17",
+      "category": "AI 정책",
+      "title": "미 상무부, 중국의 원격 AI 칩 접근 차단 규칙 시행…동남아·브라질 수출도 사전허가",
+      "summary": "미국 상무부 산업안보국(BIS)이 11월 16일(현지시간) 미국산 첨단 AI 반도체와 서버가 어디에 있든 중국 등 안보 우려국 기업에 연산 성능을 제공하려면 미국 정부의 허가를 받도록 하는 규제를 시행한다고 밝혔다. 재무부와 국가안전보장회의(NSC)의 지시에 따른 조치로, 이미 이런 서비스를 제공해 온 데이터센터도 90일 이내에 미국 정부의 허가를 받아야 하며 이를 어기면 향후 수출 제한 조치를 받는다. 안보 위협이 낮은 온라인 쇼핑몰·사회관계망서비스(SNS) 추천 용도는 예외로 뒀다.\n\n또 싱가포르·말레이시아·태국·인도네시아 등 동남아 4개국과 브라질로 첨단 칩을 수출할 때는 사전 허가를 받도록 했다. 이들 국가의 데이터센터가 중국 등에 연산력을 임대하는 전용 위험이 크다는 판단이며, 미국에 본사를 둔 회사의 자회사에는 적용하지 않는다. 규정은 무기 금수 대상 20여 개국에 상당한 규모의 컴퓨팅 역량을 원격 제공하는 데이터센터를 겨냥했고, 상무부 장관은 국무장관 등과 협의해 대상국을 추가할 수 있다.\n\n이번 조치는 젠슨 황 전 엔비디아 CEO와 혼외 관계를 맺은 앨리스 황이 싱가포르 기업 메가스피드 등을 통해 중국에 최첨단 칩을 밀반입하거나 원격 접속을 제공했다는 의혹이 제기된 직후 나왔다. 월스트리트저널에 따르면 메가스피드는 40억 달러가 넘는 엔비디아 칩을 사들여 중국 기업행으로 약 120억 달러 규모의 최고급 칩 주문을 주선했다. 상무부 발표문에는 이 규칙이 '재무부와 NSC가 작성하고 지시했다'고 적혀 수출통제를 둘러싼 부처 간 갈등도 드러났다. 연합뉴스는 젠슨 황 스캔들을 의식한 뒷북 조치 성격으로 해석했다.",
+      "highlights": [
+        "미국산 AI 칩·서버는 위치와 무관하게 중국 등에 연산력 제공 시 미 허가 필요…기존 데이터센터도 90일 내 허가",
+        "싱가포르·말레이시아·태국·인도네시아·브라질행 첨단 칩은 사전 허가…미국 기업 자회사는 제외",
+        "메가스피드 경유 우회 의혹이 방아쇠…상무부 발표문에 '재무부·NSC가 작성' 명시"
+      ],
+      "relatedStocks": [
+        "NVDA",
+        "AMD",
+        "AVGO",
+        "MU"
+      ],
+      "watchPoints": [
+        "90일 유예가 끝난 뒤 기존 동남아 데이터센터의 허가 결과가 엔비디아·AMD 매출에 미치는 영향",
+        "규제 대상국 추가 지정 여부와 중국의 반발·보복 조치",
+        "엔비디아가 3분기 실적에서 대중 매출 가이던스를 조정하는지"
+      ],
+      "sourceUrl": "https://www.yna.co.kr/view/AKR20261117004151091",
+      "originalText": "美, AI데이터센터 中원격접속 차단…젠슨황 스캔들 뒷북조치(종합) (연합뉴스, 2026년 11월 17일 05:24, 권영전 특파원)\n\n(샌프란시스코=연합뉴스) 권영전 특파원 = 미국 정부가 엔비디아를 비롯한 첨단 인공지능(AI) 반도체에 대한 중국의 원격 접속을 통제하기로 했다.\n\n미 상무부 산하 산업안보국(BIS)은 재무부·국가안전보장회의(NSC)의 지시에 따라 이 같은 조치를 시행한다고 16일(현지시간) 밝혔다.\n\n상무부의 이날 발표는 젠슨 황 전 엔비디아 최고경영자(CEO) 스캔들에 따른 후속 조처 성격이다. 앞서 젠슨 황과 혼외 관계를 맺은 앨리스 황(중국명 황러)은 싱가포르 기업 메가스피드 등을 통해 중국에 엔비디아의 최첨단 칩을 밀반입하거나, 중국 기업에 원격 접속을 제공했다는 의혹이 제기됐다.\n\n이번 조치의 골자는 미국산 슈퍼지능(SI·도널드 트럼프 행정부가 AI를 지칭하는 용어) 반도체와 서버가 어디에 있든 중국 등 미국의 안보우려국 기업에 연산 성능을 제공하려면 미국의 허가를 받도록 한 것이다. 이전에 이와 같은 서비스를 제공해온 데이터센터도 90일 이내에 미국 정부의 허가를 받아야 하며, 이를 어기면 향후 수출 제한 조치를 받게 된다.\n\n다만, 안보 위협이 낮은 온라인 쇼핑몰이나 사회관계망서비스(SNS)의 추천 시스템에 사용하는 경우는 예외로 하기로 했다.\n\n미국은 또 싱가포르, 말레이시아, 태국, 인도네시아 등 동남아 국가들과 브라질로 첨단 칩을 수출할 때 사전 허가를 받도록 했다. 이는 이들 5개 국가의 데이터센터가 중국 등에 연산력을 임대하는 등의 전용 위험이 더욱 크다는 판단에 따른 것으로, 상무부 장관은 국무장관 또는 국가안보 담당 대통령 보좌관과 협의해 대상국을 추가할 수도 있다. 그러나 미국에 본사를 둔 회사의 자회사에는 이 조항을 적용하지 않는다.\n\n상무부는 이 같은 규정을 신설한 데 대해 \"제3국 데이터센터에 대한 원격 연산을 통해 민감한 미국 기술에 대한 접근 제한을 우회할 수 없도록 하기 위한 것\"이라고 소개했다."
+    },
+    {
+      "id": "2026-11-17-nvidia-q3-13f-spacex-intel",
+      "publishedAt": "2026-11-17",
+      "category": "반도체",
+      "title": "엔비디아 3분기 13F, 스페이스X 6.3% 늘려 최대 보유 종목…인텔은 25% 축소",
+      "summary": "엔비디아가 11월 16일(현지시간) 3분기(9월 30일 기준) 13F 공시를 내놓았다. 스페이스X 보유 주식은 1억3,050만 주로 6월 말 1억2,280만 주에서 6.3% 늘어 최대 보유 종목이 됐고, 인텔은 2억1,480만 주에서 1억6,110만 주로 25.0% 줄였다. 노키아는 56.2% 줄어 7,290만 ADR, 시놉시스는 9.7% 줄어 440만 주가 됐다. 코어위브·코히런트 등 나머지 보유 종목은 큰 변화가 없었다.\n\n스페이스X 지분은 2026년 1월 엔비디아가 xAI에 100억 달러를 투자한 뒤, 2월 스페이스X가 xAI를 인수하고 6월 스페이스X가 상장하면서 직접 보유로 바뀐 것이다. 스페이스X는 엔비디아 AI GPU의 핵심 고객으로 떠오르고 있어 이 지분은 투자이자 관계 관리의 성격을 갖는다. 인텔 지분은 2025년 12월 50억 달러 규모 사모 발행으로 확보한 것으로, 당시 인텔 지분 약 4%에 해당했다. 6월 말 기준 스페이스X 지분 가치는 약 210억 달러, 인텔 지분은 약 300억 달러로 평가됐다.\n\n13F는 분기 말 보유 현황만 보여주는 공시라 매매 이유는 드러나지 않고, 9월 30일 기준이어서 11월 조정 이후의 변화는 반영되지 않았다.",
+      "highlights": [
+        "스페이스X 1억3,050만 주로 6.3% 확대…인텔을 제치고 최대 보유 종목으로",
+        "인텔은 25.0% 줄어 1억6,110만 주, 노키아 56.2%·시놉시스 9.7% 축소",
+        "스페이스X 지분은 xAI 투자 → 스페이스X의 xAI 인수 → 6월 상장으로 확보한 직접 보유분"
+      ],
+      "relatedStocks": [
+        "NVDA",
+        "SPCX",
+        "INTC",
+        "CRWV",
+        "COHR",
+        "SNPS",
+        "NBIS",
+        "NOK"
+      ],
+      "watchPoints": [
+        "스페이스X가 엔비디아 GPU 핵심 고객으로 커지며 지분이 추가로 늘어나는지",
+        "인텔 지분 25% 축소가 파운드리·AI 가속기 전략 변화와 맞물리는지",
+        "9월 말 기준 공시여서 11월 조정 이후 포지션 변화는 4분기 공시에서 확인해야 한다는 점"
+      ],
+      "sourceUrl": "https://www.tipranks.com/news/the-fly/nvidia-cuts-intel-stake-to-161-1m-shares-from-214-7m-shares-thefly-news",
+      "originalText": "급등일보 미국주식(텔레그램, 2026-11-17 07:01 KST): 엔비디아는 3분기에 스페이스X 주식 1억 3050만 주를 보유했다고 밝혔는데, 이는 이전보다 770만 주 증가한 수치입니다.\nhttps://t.me/FastStockNewsUSA/24502\n\n[참고] 13F 공시(2026년 9월 30일 기준, 직전 분기 6월 30일 대비) — 스페이스X 130.5백만 주(+6.3%), 인텔 161.1백만 주(-25.0%), 노키아 72.9백만 ADR(-56.2%), 시놉시스 4.4백만 주(-9.7%). 6월 30일 기준 보유: 스페이스X 122.8백만 주(약 210억 달러), 인텔 214.8백만 주(약 300억 달러). (TheFly/TipRanks, Rallies, CryptoBriefing 보도)\n\n[배경] 2026년 1월 엔비디아가 xAI에 100억 달러 투자 → 2월 스페이스X의 xAI 인수로 간접 보유 전환 → 6월 스페이스X 상장으로 직접 보유. 인텔 지분은 2025년 12월 50억 달러 사모 발행으로 확보(당시 약 4%)."
+    },
+    {
+      "id": "2026-11-17-tesla-berlin-cybercab-3b",
+      "publishedAt": "2026-11-17",
+      "category": "미국 기술주",
+      "title": "테슬라, 베를린 공장에 33억 달러 투자…2029년부터 사이버캡 연 100만 대 생산",
+      "summary": "테슬라가 11월 16일(현지시간) 독일 베를린 근교 그뤼나이데 공장에 30억 유로(약 33억 달러)를 투자해 사이버캡 생산 시설을 새로 짓겠다고 발표했다. 새 건물은 연 최대 100만 대의 사이버캡을 생산할 수 있는 규모로, 기존 모델Y 생산은 이어간다. 올해 말까지 건축 허가를 신청하고 2027년 상반기 착공해 2029년 생산을 시작하며, 공사와 생산 계획 단계에서 수백 명을 새로 뽑는다.\n\n폭스바겐·메르세데스-벤츠·BMW가 중국 경쟁과 수요 부진으로 감원과 공장 폐쇄를 검토하는 것과 달리 테슬라는 증설에 나섰다. 확장이 완료되면 그뤼나이데는 폭스바겐 볼프스부르크 본사를 제치고 독일 최대 규모 자동차 공장이 될 수 있다는 평가가 나온다. 다만 환경단체의 반발과 금속노조(IG메탈)와의 갈등이 변수로 남아 있다.\n\n관건은 사이버캡 수요다. 스티어링휠과 페달이 없는 2인승 로보택시인 사이버캡은 2024년 공개돼 올 9월 운행을 시작했지만 아직 어느 시장에서도 대규모로 상업 판매된 적이 없다. 미국 규제당국은 테슬라의 자체 안전 인증을 조사 중이다. 테슬라는 2027년 여름 텍사스 오스틴 공장의 사이버트럭 생산을 끝내고 그 자리를 사이버캡에 내줄 계획이다.",
+      "highlights": [
+        "30억 유로 투자로 연 100만 대 사이버캡 생산 목표…2027년 상반기 착공, 2029년 생산 시작",
+        "감원·폐쇄를 검토하는 독일 완성차 3사와 대조…확장 완료 시 독일 최대 규모 공장이 될 전망",
+        "사이버캡은 아직 대규모 상업 판매 전, 미 규제당국이 자체 안전 인증을 조사 중"
+      ],
+      "relatedStocks": [
+        "TSLA",
+        "GM",
+        "F"
+      ],
+      "watchPoints": [
+        "연말 건축 허가 신청과 환경단체·노조 반발이 일정을 지연시키는지",
+        "사이버캡 상업 운행 허가와 실제 수요(보도 기준 약 2만9,990달러·월 299달러)가 확장 규모를 뒷받침하는지",
+        "2027년 사이버트럭 생산 종료가 오스틴 공장 가동률과 실적에 미치는 영향"
+      ],
+      "sourceUrl": "https://www.channelnewsasia.com/business/tesla-plans-33-billion-cybercab-boost-germanys-troubled-auto-sector-6556736",
+      "originalText": "Tesla plans $3.3 billion Cybercab boost for Germany's troubled auto sector (Reuters, 2026년 11월 16일)\n\nFRANKFURT, Nov 16 (Reuters) - Tesla will invest €3 billion ($3.3 billion) in its German gigafactory, it said on Monday, bucking the downsizing trend among its German rivals as Elon Musk's EV maker presses ahead with ambitious expansion plans for its Cybercab model.\n\nThe planned construction of an additional production facility in Gruenheide on the outskirts of Berlin could make the US company's only European site Germany's largest auto plant by capacity, overtaking Volkswagen's Wolfsburg headquarters.\n\nTesla has emerged as one of the few growth stories in German auto manufacturing. Local heavyweights Volkswagen, Mercedes-Benz and BMW are all cutting jobs and considering plant closures in the face of growing Chinese competition.\n\nGermany has not been overwhelmingly welcoming, however. Tesla has faced environmental protests against the Gruenheide plant and repeated clashes with the country's powerful manufacturing union. Questions also remain over prospects for the Cybercab model intended to underpin this latest expansion.\n\nPRODUCTION SLATED TO BEGIN IN 2029\n\nTesla aims to produce up to 1 million Cybercab robotaxis annually in Gruenheide, the company said in an emailed statement to Reuters, though the model has yet to be sold anywhere at scale commercially.\n\nThe company said it would submit a building permit application for the Gruenheide project before the end of the year. Construction is scheduled to begin in the first half of 2027, with production set to start in 2029.\n\nTesla said it would create more jobs at Gruenheide, with several hundred new workers sought for the first step of construction and production planning.\n\nOpened in March 2022, Tesla's Gruenheide factory was built in a fraction of the time typically required for major industrial projects in Germany, overcoming environmental challenges and permitting hurdles. However, local management has repeatedly clashed with Germany's powerful IG Metall union, which has accused the company of union-busting tactics. Tesla says IG Metall is serving its own interests.\n\nTesla will wind down Cybertruck production at its Austin factory in Texas at the end of summer 2027, which Musk said should make way for more Cybercabs.\n\n($1 = 0.9073 euros)"
+    },
+    {
+      "id": "2026-11-17-13f-data-center-power-exodus",
+      "publishedAt": "2026-11-17",
+      "category": "투자전략",
+      "title": "3분기 13F: 데이터센터·전력주는 이탈, 반도체는 홀드…138개 펀드 전량 매도",
+      "summary": "로이터가 미국 증권거래위원회(SEC)에 제출된 13F 약 6,400건을 분석한 결과, 3분기 기관투자자들의 데이터센터 관련주 선호가 눈에 띄게 식었다. 데이터센터주를 전량 매도한 펀드가 138개로 새로 담은 펀드(119개)보다 많았고, 로이터가 선정한 대형 데이터센터주 8개 종목의 기관 보유자는 3,411개에서 3,392개로 줄었다.\n\n이탈은 전력·유틸리티주에서 가장 컸다. 212개 펀드가 전량 매도해 신규 진입(96개)의 두 배를 넘었다. 미국 중간선거 결과 이후 데이터센터 건설이 정치적 규제를 받을 수 있다는 우려가 투자심리를 식힌 것으로 풀이된다. 반면 반도체·AI주는 순매수 기조를 유지했다. 반도체주를 보유한 펀드 가운데 2,951개(51%)가 비중을 늘렸고 2,584개(44.7%)가 줄였으며, 신규 진입 77개가 전량 매도 69개를 웃돌았다. AI주 전체 보유 기관 수는 33개 늘어나는 데 그쳐 매수세가 소수 종목에 집중되는 모습이었다.\n\n13F는 분기 말(9월 30일) 보유 현황 스냅샷이라 매매 이유를 보여주지 않고, 11월 중간선거 이후의 조정은 반영되지 않았다.",
+      "highlights": [
+        "데이터센터주 전량 매도 138개 vs 신규 119개…8대 데이터센터주 보유 기관 3,411→3,392개",
+        "전력·유틸리티주는 212개 전량 매도 vs 신규 96개로 이탈이 가장 컸다",
+        "반도체는 51%가 비중 확대·44.7% 축소로 순매수 유지, AI주 보유 기관은 33개 증가에 그침"
+      ],
+      "relatedStocks": [
+        "VRT",
+        "DLR",
+        "EQIX",
+        "NVDA",
+        "MU",
+        "AVGO"
+      ],
+      "watchPoints": [
+        "중간선거 이후 데이터센터 건설 규제 논의가 실제 입법으로 이어지는지",
+        "4분기 13F에서 전력주 이탈이 반도체·AI주 축소로 번지는지",
+        "9월 말 기준 스냅샷이라 11월 조정 이후 포지션은 드러나지 않는다는 점"
+      ],
+      "sourceUrl": "https://www.marketscreener.com/news/investors-cooled-on-data-center-stocks-in-third-quarter-filings-show-ce785edfdc89f521",
+      "originalText": "Investors cooled on data center stocks in third quarter, filings show (Reuters, 2026년 11월 16일, Pritam Biswas)\n\nNov 16 (Reuters) - Institutional investor enthusiasm for data-center stocks waned in the third quarter, with more funds completely exiting positions than opening new ones, while buying of artificial intelligence and semiconductor stocks remained positive but concentrated, regulatory filings showed.\n\nAt least 138 funds completely sold their data-center positions during the period, compared with 119 that initiated new positions, according to a Reuters analysis of nearly 6,400 Securities and Exchange Commission 13F filings from pensions, hedge funds, wealth managers and others.\n\nThe number of institutional investors that were holders of a group of eight publicly traded companies identified by Reuters as among the largest data center stocks declined to 3,392 from 3,411 in the previous quarter.\n\nHeavy investment in AI infrastructure and computing capacity led by technology companies ranging from Nvidia to Microsoft earlier this year had lifted a slew of stocks related to data centers, including Vertiv Holdings and Digital Realty Trust as well as utilities and power stocks that stood to gain from such facilities' surging electricity needs. But enthusiasm for that trade has been dampened by growing concerns over whether the US midterm election results would lead to political curbs on data center construction.\n\nThe retreat was sharpest in utilities and power stocks, with 212 funds exiting such positions, more than double the 96 that initiated new ones, the filings show.\n\nFUNDS ADJUST AI HOLDINGS\n\nBy contrast, institutional investors remained net buyers of semiconductor and AI stocks, although new positions only slightly outpaced complete exits. In semiconductors, 2,951 funds, or 51 per cent of those holding the stocks across both quarters, increased their positions, while 2,584, or 44.7 per cent, reduced them. Just 77 funds initiated new positions, against 69 that exited completely. AI stock holdings tracked a very similar pattern, with the total number of institutional holders of such shares rising by just 33.\n\nInstitutional investors are required to disclose their equity holdings in the quarterly 13F filings with the SEC. These offer a snapshot of positions at quarter-end but do not disclose the reasons behind investment decisions.\n\nThe third quarter of 2026 ended on September 30, over a month before the Nasdaq selloff after the US midterm elections."
+    },
     {
       "id": "2026-11-16-nvidia-jensen-huang-comeback-war-room-ft",
       "category": "반도체",
