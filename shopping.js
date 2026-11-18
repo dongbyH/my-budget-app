@@ -65,20 +65,29 @@ function shoppingPriceForm(item, previous) {
 
 function shoppingList() {
   const {items} = shoppingData();
+  const rows = items.map(item => {
+    const key = shoppingKey(item.name);
+    const previous = shoppingPrices(key)[0];
+    const expanded = shoppingEditor === item.id;
+    return `<li class="shopping-item">
+      <div class="shopping-item-top">
+        <div class="shopping-item-info">
+          <h3>${esc(item.name)}</h3>
+          ${previous ? `<button class="shopping-last" type="button" data-shopping-history="${esc(key)}"><span>지난번 ${shoppingPurchaseLabel(previous)} · ${shoppingUnitLabel(previous)}</span><span aria-hidden="true">›</span></button>` : ''}
+        </div>
+        <div class="shopping-actions">
+          <button class="outline" type="button" data-shopping-done="${esc(item.id)}">구매 완료</button>
+          <button class="secondary" type="button" data-shopping-edit="${esc(item.id)}" aria-expanded="${expanded}">가격 기록</button>
+        </div>
+      </div>
+      ${expanded ? shoppingPriceForm(item, previous) : ''}
+    </li>`;
+  }).join('');
   return `<form id="shoppingAdd" class="shopping-add card">
     <input name="name" aria-label="살 물건" placeholder="살 물건 추가" maxlength="60" autocomplete="off" required>
     <button class="primary" type="submit">추가</button>
   </form>
-  <div class="shopping-list">${items.length ? items.map(item => {
-    const previous = shoppingPrices(shoppingKey(item.name))[0];
-    return `<article class="card shopping-item">
-      <div class="shopping-item-top">
-        <div><h3>${esc(item.name)}</h3>${previous ? `<p class="muted shopping-last">지난번 ${shoppingPurchaseLabel(previous)}<br>${shoppingUnitLabel(previous)}</p><button class="text-link" type="button" data-shopping-history="${esc(shoppingKey(item.name))}">가격 기록 보기 ›</button>` : ''}</div>
-        <div class="shopping-actions"><button class="outline" type="button" data-shopping-done="${esc(item.id)}">구매 완료</button><button class="secondary" type="button" data-shopping-edit="${esc(item.id)}" aria-expanded="${shoppingEditor === item.id}">가격 기록</button></div>
-      </div>
-      ${shoppingEditor === item.id ? shoppingPriceForm(item, previous) : ''}
-    </article>`;
-  }).join('') : '<div class="card empty">살 물건을 추가해 보세요.</div>'}</div>`;
+  ${rows ? `<ul class="shopping-items" role="list" aria-label="살 물건 목록">${rows}</ul>` : '<div class="card empty">살 물건을 추가해 보세요.</div>'}`;
 }
 
 function shoppingHistory() {

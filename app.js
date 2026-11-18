@@ -59,7 +59,28 @@ function migrateInstallmentFixedCosts(){
   }
  }
 }
-function finance(m){const [start,end]=period(m),key=iso(start),last=iso(end),count=diff(start,end)+1,details=mData(m),normal=details.fixed.reduce((s,x)=>s+amt(x.amount),0);let installments=installmentsForPeriod(m),instTotal=installments.reduce((s,t)=>s+t.amount,0);let rows=db.transactions.filter(t=>t.date>=key&&t.date<=last);let exp=rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid').reduce((s,t)=>s+amt(t.amount),0),extra=rows.filter(t=>t.type==='income').reduce((s,t)=>s+amt(t.amount),0);let earn=amt(details.income)+extra,available=earn-normal-instTotal;const live=fromISO(iso(new Date())),elapsed=Math.min(count,Math.max(0,diff(start,live)+1));return{start,end,count,elapsed,details,normal,installments,instTotal,rows,exp,extra,earn,available,daily:available/count,pace:available/count*elapsed-exp,remaining:available-exp}}
+function finance(m, date = new Date()){const [start,end]=period(m),key=iso(start),last=iso(end),count=diff(start,end)+1,details=mData(m),normal=details.fixed.reduce((s,x)=>s+amt(x.amount),0);let installments=installmentsForPeriod(m),instTotal=installments.reduce((s,t)=>s+t.amount,0);let rows=db.transactions.filter(t=>t.date>=key&&t.date<=last);let exp=rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid').reduce((s,t)=>s+amt(t.amount),0),extra=rows.filter(t=>t.type==='income').reduce((s,t)=>s+amt(t.amount),0);let earn=amt(details.income)+extra,available=earn-normal-instTotal;const live=fromISO(iso(date)),elapsed=Math.min(count,Math.max(0,diff(start,live)+1));return{start,end,count,elapsed,details,normal,installments,instTotal,rows,exp,extra,earn,available,daily:available/count,pace:available/count*elapsed-exp,remaining:available-exp}}
+function remainingBudgetDays(start, end, date) {
+  const day = fromISO(iso(date));
+  if (day > end) return 0;
+  return diff(day < start ? start : day, end) + 1;
+}
+
+function dailySpendingGuide(budget, date) {
+  const days = remainingBudgetDays(budget.start, budget.end, date);
+  const balance = budget.remaining;
+  const balanceText = balance < 0
+    ? '예산 ' + won(-balance) + ' 초과'
+    : '남은 생활비 ' + won(balance);
+  if (!days) return {label: balance < 0 ? '기간 생활비 초과' : '기간 종료 잔액', amount: Math.abs(balance), detail: '예산 기간 종료'};
+  const future = fromISO(iso(date)) < budget.start;
+  return {
+    label: future ? '기간 시작 후 하루 권장액' : '오늘부터 하루 권장액',
+    amount: Math.floor(Math.max(0, balance) / days),
+    detail: balanceText + ' · ' + (future ? '총 ' + days + '일' : days + '일 남음')
+  };
+}
+
 function isViewed(m){return ym(new Date())===m}
 const TAB_ORDER=['home','shopping','ledger','stats','settings'];
 let swipeDirection=0;
@@ -224,12 +245,14 @@ const uiTxKind=t=>{const chosen=catById(t.categoryId);if(chosen)return categoryI
 const uiTag=(name,symbol='wallet',tint='blue')=>`<span class="ui-glyph ${tint}">${uiIcon(symbol)}</span><span>${esc(name)}</span>`;
 
 function home(){
- const c=finance(month),label=iso(c.start)+' ~ '+iso(c.end);
- const now=iso(new Date()),past=c.rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid'&&t.date<=now).reduce((s,t)=>s+amt(t.amount),0),future=c.rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid'&&t.date>now).reduce((s,t)=>s+amt(t.amount),0),pred=c.elapsed>0?c.available-past/c.elapsed*c.count:c.available,forecast=c.elapsed>0?Math.min(pred,c.available-past-future):c.available-future;
+ const currentDate = new Date();
+ const c=finance(month,currentDate),label=iso(c.start)+' ~ '+iso(c.end);
+ const guide=dailySpendingGuide(c,currentDate);
+ const now=iso(currentDate),past=c.rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid'&&t.date<=now).reduce((s,t)=>s+amt(t.amount),0),future=c.rows.filter(t=>t.type==='expense'&&t.treatment!=='fixedPaid'&&t.date>now).reduce((s,t)=>s+amt(t.amount),0),pred=c.elapsed>0?c.available-past/c.elapsed*c.count:c.available,forecast=c.elapsed>0?Math.min(pred,c.available-past-future):c.available-future;
  const ratio=c.available>0?Math.min(100,Math.max(0,c.exp/c.available*100)):0;
  const recent=[...c.rows].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,4);
  return `<div class="screen-layout home-screen">
- <section class="hero-blue"><div class="hero-copy"><span class="hero-label">오늘 기준 사용 가능 금액 ⓘ</span><strong class="hero-number">${c.pace>=0?'+':'−'}${won(Math.abs(c.pace))}</strong><span class="hero-dates">${label} (${c.count}일)</span></div><img class="hero-pig" src="./pig-hero.png" alt="돼지저금통"></section>
+ <section class="hero-blue"><div class="hero-copy"><span class="hero-label">${guide.label}</span><strong class="hero-number">${won(guide.amount)}</strong><span class="hero-balance">${guide.detail}</span><span class="hero-dates">${label}</span></div><img class="hero-pig" src="./pig-hero.png" alt="돼지저금통"></section>
  <div class="budget-summary-head"><h3>예산 요약</h3><button type="button" class="outline mini" id="openBudget" data-move="budget">예산 관리 ›</button></div>
  <section class="compact-metrics">
   <article class="metric-mini"><div class="metric-ico blue">${uiIcon('calendar')}</div><div class="metric-caption">하루 예산</div><strong>${won(c.daily)}</strong></article>
@@ -246,7 +269,11 @@ function home(){
 }
 
 function budget(){
- const c=finance(month),current=budgetEdit&&budgetDraft?budgetDraft:c.details;
+ const date = new Date();
+ const c=finance(month,date),current=budgetEdit&&budgetDraft?budgetDraft:c.details;
+ const pace = Math.round(c.pace);
+ const paceLabel = c.elapsed === 0 ? '예산 기간 시작 전'
+   : remainingBudgetDays(c.start, c.end, date) === 0 ? '기간 계획 대비' : '오늘까지 계획 대비';
  const fixedTotal=current.fixed.reduce((s,x)=>s+amt(x.amount),0)+c.instTotal,avail=amt(current.income)+c.extra-fixedTotal;
  const fixedRows=budgetEdit?current.fixed.map(x=>`<div class="edit-fixed-row"><div class="field"><label>항목명</label><input data-fname="${esc(x.id)}" value="${esc(x.name)}"></div><div class="field"><label>금액</label><input type="number" min="0" data-famount="${esc(x.id)}" value="${amt(x.amount)}"></div><button class="danger mini" data-rfixed="${esc(x.id)}">삭제</button></div>`).join(''):current.fixed.map((x,i)=>`<div class="fixed-entry"><span class="fixed-name"><span class="ui-glyph ${['pink','blue','amber','violet'][i%4]}">${uiIcon(categoryIconFor({name:x.name}))}</span>${esc(x.name)}</span><b>${won(x.amount)}</b></div>`).join('');
  const automaticFixedRows=c.installments.map(t=>`<div class="fixed-entry installment-fixed-entry"><span class="fixed-name"><span class="ui-glyph blue">${uiIcon('card')}</span><span><b>${esc(t.name)}</b><small>할부 자동 · ${t.number}/${t.months}회차 · 이후 ${t.months-t.number}회 남음</small></span></span><b>${won(t.amount)}</b></div>`).join('');
@@ -254,7 +281,7 @@ function budget(){
  return `<div class="screen-layout budget-screen">
  <div><button type="button" class="outline mini" data-move="home">‹ 홈</button></div>
  <section class="budget-heading"><div><h2>예산 관리</h2><p class="muted">수입과 지출을 한눈에 관리하세요.</p></div><img class="budget-pig" src="./pig-hero.png" alt=""></section>
- <section class="budget-snapshot" aria-label="이번 기간 예산 요약"><div class="budget-snapshot-top"><span class="budget-snapshot-label">이번 기간 생활비 예산</span><strong class="budget-snapshot-amount">${won(avail)}</strong></div><div class="budget-snapshot-bottom"><span>오늘 기준 여유금</span><b class="${c.pace<0?'red':'green'}">${c.pace>=0?'+':'−'}${won(Math.abs(c.pace))}</b></div></section>
+ <section class="budget-snapshot" aria-label="이번 기간 예산 요약"><div class="budget-snapshot-top"><span class="budget-snapshot-label">이번 기간 생활비 예산</span><strong class="budget-snapshot-amount">${won(avail)}</strong></div><div class="budget-snapshot-bottom"><span>${paceLabel}</span><b class="${pace<0?'red':'green'}">${c.elapsed === 0 ? '—' : pace < 0 ? won(-pace) + ' 초과' : pace > 0 ? won(pace) + ' 여유' : '0원'}</b></div></section>
  <div class="budget-controls">${budgetEdit?`<button class="primary" id="saveBudget">${uiIcon('check')} 수정완료</button><button class="outline" id="addFixedTop">${uiIcon('plus')} 항목 추가</button><button class="outline" id="cancelBudget">취소</button>`:`<button class="outline" id="editBudget">${uiIcon('pencil')} 수정</button>`}</div>
  <section class="toss-card income-box"><div class="income-row"><span class="ui-glyph blue">${uiIcon('wallet')}</span><div class="income-main"><span>기본 월수입</span>${budgetEdit?`<input type="number" id="income" min="0" value="${amt(current.income)}">`:`<strong>${won(current.income)}</strong>`}</div></div><div class="income-secondary"><span>추가 수입</span><b class="blue-text">+${won(c.extra)}</b></div>${budgetEdit?`<button class="text-link" data-add="income">+ 추가 수입 등록</button>`:''}</section>
  <section class="toss-card accordion-box"><button class="fold-head" id="toggleFixed" aria-expanded="${budgetOpen.fixed}"><span class="ui-glyph blue">${uiIcon('calendar')}</span><span class="fold-title"><b>고정지출</b><small>${current.fixed.length+c.installments.length}개 항목 · ${won(fixedTotal)}</small></span><span class="fold-arrow ${budgetOpen.fixed?'up':''}">${uiIcon('chevron')}</span></button>${budgetOpen.fixed?`<div class="fold-body">${fixedRows}${automaticFixedRows}${!current.fixed.length&&!c.installments.length?'<p class="muted">등록된 고정지출이 없습니다.</p>':''}${budgetEdit?`<button class="soft-add" id="addFixed">+ 항목 추가</button>`:''}</div>`:''}</section>
